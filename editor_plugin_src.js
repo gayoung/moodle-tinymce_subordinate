@@ -26,7 +26,7 @@
                        
             ed.addCommand('mceSubordinate', function() { 
                 var idNumber;
-                var indexNumber;
+                var indexNumber;                
                 
                 var type = ed.editorId.split("_");   
                 var lasttype = type[2].split("-");
@@ -38,20 +38,17 @@
                 for(var i=1; i < idNumber.length-1; i++)
                 {
                     indexNumber += idNumber[i] + "-";
-                }
+                }                
                     
                 indexNumber += idNumber[idNumber.length-1]; 
                 
-//                console.dir("what is selected?");
-//                console.dir(ed.selection.getContent());
-//                
                 makeSubordinateDialog(ed, indexNumber);
-                //               
+                               
                          
-                init(ed.selection.getContent(), indexNumber);
-                
-                loadValues(ed, indexNumber);
-                
+//                init(ed.selection.getContent(), indexNumber);
+//                
+//                loadValues(ed, indexNumber);
+//                
                 // to fix the dialog window size to 80% of window size
                 var wWidth = $(window).width();
                 var wHeight = $(window).height();
