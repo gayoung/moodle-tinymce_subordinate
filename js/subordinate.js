@@ -9,7 +9,7 @@ var _subIndex = 1;
 //    selectedText.value = content;     
 //}    
 //        
-function changeForm(e, id) {
+function changeForm(e, ed, id) {
     var container = document.getElementById("msm_subordinate_content_form_container-"+id);
     var selectVal;
         
@@ -35,7 +35,7 @@ function changeForm(e, id) {
             break;
     }
     
-    var fieldset = makeInfoForm(id);  
+    var fieldset = makeInfoForm(ed, id);  
     
     //-----------------------------start of external url form-----------------------------//
     var urlfieldset = document.createElement("fieldset");
@@ -175,8 +175,19 @@ function initInfoEditor(id)
     });
 }
 
-function makeInfoForm(id)
-{   
+function makeInfoForm(ed, id)
+{      
+    var selectedNode = null;
+        
+    if($.browser.msie)
+    {
+        selectedNode = ed.selection.getNode().childNodes[0].tagName;
+    }
+    else
+    {
+        selectedNode = ed.selection.getNode().tagName;
+    }   
+        
     // making a fieldset element for the info form (all selection will be using it
     // so make it available to all switch cases)    
     var fieldset = document.createElement("fieldset");
@@ -197,7 +208,7 @@ function makeInfoForm(id)
     
     var infoTitleInput = document.createElement("textarea");
     var infoContentInput = document.createElement("textarea");  
-        
+          
     infoTitleLabel.setAttribute("for", "msm_subordinate_infoTitle-"+id);        
     infoTitleLabel.appendChild(infoTitle);
         
@@ -222,11 +233,99 @@ function makeInfoForm(id)
         
     infocontentdiv.appendChild(infoContentLabel);        
     infocontentdiv.appendChild(infoContentInput);
-    fieldset.appendChild(infocontentdiv);
+    fieldset.appendChild(infocontentdiv);     
+    
+    if(selectedNode == "A")
+    {
+        loadPreviousData(ed, id);
+    }
     
     return fieldset;
 }
-//
+
+function loadPreviousData(editor, id)
+{       
+    console.log("in loadPreviousData");
+    
+    var selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
+    
+    var indexId = '';
+    for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
+    {
+        indexId += selectedAnchorIdInfo[i] + "-";
+    }
+    indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
+       
+    var prevSelectValue = null;
+    var prevInfoTitleValue = null;
+    var prevInfoContentValue = null;
+   
+    $('#msm_subordinate_result-'+indexId).children('div').each(function() {
+        if(this.id == 'msm_subordinate_select-'+indexId)
+        {
+            prevSelectValue = $(this).text();
+        }
+        else if(this.id == 'msm_subordinate_infoTitle-'+indexId)
+        {
+            prevInfoTitleValue = $(this).html();
+        }
+        else if(this.id == 'msm_subordinate_infoContent-'+indexId)
+        {
+            prevInfoContentValue = $(this).html();
+        }
+    });
+    
+    switch(prevSelectValue)
+    {
+        case "Information":
+            $("#msm_subordinate_form-"+id+ " #msm_subordinate_select-"+id).val(0);
+            break;
+        case "External Link":
+            $("#msm_subordinate_form-"+id+ " #msm_subordinate_select-"+id).val(1);
+            break;
+        case "Internal Reference":
+            $("#msm_subordinate_form-"+id+ " #msm_subordinate_select-"+id).val(2);
+            break;
+        case "External Reference":
+            $("#msm_subordinate_form-"+id+ " #msm_subordinate_select-"+id).val(3);
+            break;
+    }
+   
+    //    var subDialog = document.getElementById("msm_subordinate_container-"+id);
+    //    
+    //    var title = subDialog.getElementById("msm_subordinate_infoTitle-"+id);
+    //    
+   
+    $(".msm_subordinate_containers").each(function() {
+        $(this).children("*").each(function() {
+            console.log($(this));
+//            $(this).find(".msm_subordinate_content_form_containers").each(function() {
+//                console.log($(this));
+//                $(this).find(".msm_subordinate_textareas");
+//            });
+        });
+    });
+   
+//    $(".msm_subordinate_textareas").each(function() {
+//        console.log(this.id);
+//        if(this.id == "msm_subordinate_infoTitle-"+id)
+//        {
+//            //            tinymce.get(this.id).setContent(prevInfoTitleValue);
+//            console.log(prevInfoTitleValue);
+//            this.value = prevInfoTitleValue;
+//            console.log(this.value);
+//        }
+//        else if(this.id == "msm_subordinate_infoContent-"+id)
+//        {
+//            console.log(prevInfoContentValue);
+//            //            tinymce.get(this.id).setContent(prevInfoContentValue);
+//            this.value = prevInfoContentValue;
+//            console.log(this.value);
+//        }
+//    });
+     
+}
+
 function closeSubFormDialog(id)
 {
     $('#msm_subordinate_container-'+id+" textarea").each(function() {
@@ -284,7 +383,7 @@ function submitSubForm(ed, id)
                
         if(selectedNode != "A")
         {           
-            var newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+selectedText+"</a>";
+            var newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+selectedText+"</a> ";
             ed.selection.setContent(newContent); 
         }
     
@@ -301,8 +400,7 @@ function createSubordinateDiv(index)
     resultContainer.id = "msm_subordinate_result-"+index+"-"+_subIndex;
     resultContainer.className = "msm_subordinate_results";
     
-    $("#msm_subordinate-"+index+" textarea").each(function(){   
-        
+    $("#msm_subordinate-"+index+" textarea").each(function(){          
         this.value = tinymce.get(this.id).getContent({
             format: "html"
         });       
@@ -345,14 +443,14 @@ function createSubordinateDiv(index)
         resultSelectDiv.appendChild(resultSelectText);
     
         var resultTitleDiv = document.createElement("div");
-        resultTitleDiv.id = "msm_subordinate_infoTitle-"+index+"-"+_subIndex;
+        resultTitleDiv.id = "msm_subordinate_infoTitle-"+index+"-"+_subIndex;        
     
-        $(resultTitleDiv).append($("#msm_subordinate_infoTitle-"+index).html());
+        $(resultTitleDiv).append($("#msm_subordinate_infoTitle-"+index).val());
     
         var resultContentDiv = document.createElement("div");
         resultContentDiv.id = "msm_subordinate_infoContent-"+index+"-"+_subIndex;
     
-        $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).html());
+        $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).val());
     
         resultContainer.appendChild(resultSelectDiv);
         resultContainer.appendChild(resultTitleDiv);
@@ -363,10 +461,46 @@ function createSubordinateDiv(index)
     else
     {
         return errorArray;
-    }
-   
-    
+    }    
 }
+
+function nullErrorWarning(errorArray, id)
+{ 
+    for(var i=0; i < errorArray.length; i++)
+    {
+        var match = errorArray[i].match(/subordinate.url./);
+            
+        if(match)
+        {
+            var invalidornull = errorArray[i].split("|");
+            
+            if(invalidornull.length > 1)
+            {
+                $("#msm_invalid_url_span").css("display","block");
+                $(invalidornull[0]).css("border", "solid 4px #FFA500");
+            }
+            $("#"+errorArray[i]).css("border", "solid 4px #FFA500");
+            
+        }
+        else
+        {
+            $("#"+errorArray[i]).css("border", "solid 4px #FFA500");
+        }
+    }        
+                
+    $("<div class=\"dialogs\" id=\"msm_emptySubContent\"> Please fill out the highlighted areas with appropriate information to complete the form. </div>").appendTo('#msm_subordinate_container-'+id);
+
+    $("#msm_emptySubContent").dialog({
+        modal: true,
+        buttons: {
+            Ok: function() {
+                errorArray = null;
+                $(this).dialog("close");
+            }
+        }
+    }); 
+}
+
 //
 //// ed --> current editor that the plugin was triggered from
 //function submitSubForm(ed, id)
@@ -634,42 +768,6 @@ function createSubordinateDiv(index)
 //    return dialogDiv;
 //}
 //
-function nullErrorWarning(errorArray, id)
-{ 
-    for(var i=0; i < errorArray.length; i++)
-    {
-        var match = errorArray[i].match(/subordinate.url./);
-            
-        if(match)
-        {
-            var invalidornull = errorArray[i].split("|");
-            
-            if(invalidornull.length > 1)
-            {
-                $("#msm_invalid_url_span").css("display","block");
-                $(invalidornull[0]).css("border", "solid 4px #FFA500");
-            }
-            $("#"+errorArray[i]).css("border", "solid 4px #FFA500");
-            
-        }
-        else
-        {
-            $("#"+errorArray[i]).css("border", "solid 4px #FFA500");
-        }
-    }        
-                
-    $("<div class=\"dialogs\" id=\"msm_emptySubContent\"> Please fill out the highlighted areas with appropriate information to complete the form. </div>").appendTo('#msm_subordinate_container-'+id);
-
-    $("#msm_emptySubContent").dialog({
-        modal: true,
-        buttons: {
-            Ok: function() {
-                errorArray = null;
-                $(this).dialog("close");
-            }
-        }
-    }); 
-}
 //
 //function loadValues(ed, id)
 //{

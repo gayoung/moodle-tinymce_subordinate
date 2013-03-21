@@ -191,7 +191,7 @@ function makeSubordinateDialog(ed, idNumber)
     selectTypeMenu.id = 'msm_subordinate_select-'+idNumber;
     selectTypeMenu.name = 'msm_subordinate_select-'+idNumber;
     selectTypeMenu.onchange = function(event) {
-        changeForm(event, idNumber);
+        changeForm(event, ed, idNumber);
     };
         
     dialogContentForm.id = 'msm_subordinate_content_form_container-'+idNumber;
@@ -215,7 +215,7 @@ function makeSubordinateDialog(ed, idNumber)
         closeSubFormDialog(idNumber);
     };
     
-    var infoForm = makeInfoForm(idNumber);    
+    var infoForm = makeInfoForm(ed, idNumber);    
     dialogContentForm.appendChild(infoForm);
     
     selectTypeMenu.appendChild(selectTypeOption1);
@@ -239,8 +239,8 @@ function makeSubordinateDialog(ed, idNumber)
     dialogForm.appendChild(document.createElement('br'));
     dialogForm.appendChild(dialogButtonContainer);
         
-    dialogwhole.appendChild(dialogForm);    
-   
+    dialogwhole.appendChild(dialogForm);   
+      
     // only append the new dialog form to div when it hasn't already been done
     if(!container.hasChildNodes())
     {
