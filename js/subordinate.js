@@ -176,18 +176,7 @@ function initInfoEditor(id)
 }
 
 function makeInfoForm(ed, id)
-{      
-    var selectedNode = null;
-        
-    if($.browser.msie)
-    {
-        selectedNode = ed.selection.getNode().childNodes[0].tagName;
-    }
-    else
-    {
-        selectedNode = ed.selection.getNode().tagName;
-    }   
-        
+{           
     // making a fieldset element for the info form (all selection will be using it
     // so make it available to all switch cases)    
     var fieldset = document.createElement("fieldset");
@@ -233,12 +222,7 @@ function makeInfoForm(ed, id)
         
     infocontentdiv.appendChild(infoContentLabel);        
     infocontentdiv.appendChild(infoContentInput);
-    fieldset.appendChild(infocontentdiv);     
-    
-    if(selectedNode == "A")
-    {
-        loadPreviousData(ed, id);
-    }
+    fieldset.appendChild(infocontentdiv);    
     
     return fieldset;
 }
@@ -294,35 +278,20 @@ function loadPreviousData(editor, id)
     //    var subDialog = document.getElementById("msm_subordinate_container-"+id);
     //    
     //    var title = subDialog.getElementById("msm_subordinate_infoTitle-"+id);
-    //    
+  
    
-    $(".msm_subordinate_containers").each(function() {
-        $(this).children("*").each(function() {
-            console.log($(this));
-//            $(this).find(".msm_subordinate_content_form_containers").each(function() {
-//                console.log($(this));
-//                $(this).find(".msm_subordinate_textareas");
-//            });
-        });
+    $(".msm_subordinate_textareas").each(function() {
+        if(this.id == "msm_subordinate_infoTitle-"+id)
+        {
+            console.log(prevInfoTitleValue);
+            this.value = prevInfoTitleValue;
+        }
+        else if(this.id == "msm_subordinate_infoContent-"+id)
+        {
+            console.log(prevInfoContentValue);
+            this.value = prevInfoContentValue;
+        }
     });
-   
-//    $(".msm_subordinate_textareas").each(function() {
-//        console.log(this.id);
-//        if(this.id == "msm_subordinate_infoTitle-"+id)
-//        {
-//            //            tinymce.get(this.id).setContent(prevInfoTitleValue);
-//            console.log(prevInfoTitleValue);
-//            this.value = prevInfoTitleValue;
-//            console.log(this.value);
-//        }
-//        else if(this.id == "msm_subordinate_infoContent-"+id)
-//        {
-//            console.log(prevInfoContentValue);
-//            //            tinymce.get(this.id).setContent(prevInfoContentValue);
-//            this.value = prevInfoContentValue;
-//            console.log(this.value);
-//        }
-//    });
      
 }
 
@@ -347,9 +316,37 @@ function closeSubFormDialog(id)
  **/
 function submitSubForm(ed, id)
 {  
+    var selectedText = ed.selection.getContent();
+    //        
+    var selectedNode = null;
+        
+    if($.browser.msie)
+    {
+        selectedNode = ed.selection.getNode().childNodes[0].tagName;
+    }
+    else
+    {
+        selectedNode = ed.selection.getNode().tagName;
+    }    
+    
     var newSubordinateDiv = null;
     
-    newSubordinateDiv = createSubordinateDiv(id);    
+    if(selectedNode != 'A')
+    {
+        newSubordinateDiv = createSubordinateDiv(id, id+"-"+_subIndex);  
+    }
+    else
+    {
+        var textIdInfo = ed.selection.getNode().id.split("-");
+        var textId = '';
+        for(var i=1; i < textIdInfo.length-1; i++)
+        {
+            textId += textIdInfo[i]+"-";
+        }
+        textId+= textIdInfo[textIdInfo.length-1];        
+        
+        newSubordinateDiv = replaceSubordinateDiv(id, textId);
+    }
         
     if(newSubordinateDiv instanceof Array)
     {
@@ -367,23 +364,10 @@ function submitSubForm(ed, id)
         subIndex += subordinateDivIndexInfo[subordinateDivIndexInfo.length-1];    
     
         $("#msm_subordinate_result_container-"+id).append(newSubordinateDiv);
-    
-        var selectedText = ed.selection.getContent();
-        //        
-        var selectedNode = null;
-        
-        if($.browser.msie)
-        {
-            selectedNode = ed.selection.getNode().childNodes[0].tagName;
-        }
-        else
-        {
-            selectedNode = ed.selection.getNode().tagName;
-        }
                
         if(selectedNode != "A")
         {           
-            var newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+selectedText+"</a> ";
+            var newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";                       
             ed.selection.setContent(newContent); 
         }
     
@@ -392,12 +376,26 @@ function submitSubForm(ed, id)
    
 }
 
-function createSubordinateDiv(index)
+function replaceSubordinateDiv(index, hotId)
+{
+    $("#msm_subordinate_result_container-"+index).children("div").each(function() {
+        if(this.id == "msm_subordinate_result-"+hotId)
+        {
+            $(this).empty().remove();
+        }
+    });
+   
+    var subordinateResultContainer = createSubordinateDiv(index, hotId);
+   
+    return subordinateResultContainer;
+}
+
+function createSubordinateDiv(index, idString)
 {
     var errorArray = [];
     
     var resultContainer = document.createElement("div");
-    resultContainer.id = "msm_subordinate_result-"+index+"-"+_subIndex;
+    resultContainer.id = "msm_subordinate_result-"+idString;
     resultContainer.className = "msm_subordinate_results";
     
     $("#msm_subordinate-"+index+" textarea").each(function(){          
@@ -408,53 +406,31 @@ function createSubordinateDiv(index)
         if(this.value == '')
         {
             errorArray.push(this.id+"_ifr");
-        }
-    //        var childnodes = tinymce.get(this.id).getBody().childNodes;    
-    //        
-    //        var length = childnodes.length;
-    //       
-    //        for(var i=0; i < length; i++)
-    //        {
-    //            this.appendChild(childnodes[0]);
-    //        }        
+        }    
     }); 
-    
-    
-    
-    //    var infoTitleTextarea = document.getElementById("msm_subordinate_infoTitle-"+index);   
-    //    
-    //    if(!infoTitleTextarea.hasChildNodes())
-    //    {
-    //        errorArray.push("#msm_subordinate_infoTitle-"+index+"_ifr"); 
-    //    }
-    //    
-    //    var infoContentTextarea = document.getElementById("msm_subordinate_infoContent-"+index);   
-    //    
-    //    if(!infoContentTextarea.hasChildNodes())
-    //    {
-    //        errorArray.push("#msm_subordinate_infoContent-"+index+"_ifr"); 
-    //    }
     
     if(errorArray.length == 0)
     {
         var resultSelectDiv = document.createElement("div");
-        resultSelectDiv.id = "msm_subordinate_select-"+index+"-"+_subIndex;    
+        resultSelectDiv.id = "msm_subordinate_select-"+idString;    
         var resultSelectText = document.createTextNode($("#msm_subordinate_select-"+index).val());
         resultSelectDiv.appendChild(resultSelectText);
     
         var resultTitleDiv = document.createElement("div");
-        resultTitleDiv.id = "msm_subordinate_infoTitle-"+index+"-"+_subIndex;        
+        resultTitleDiv.id = "msm_subordinate_infoTitle-"+idString;        
     
         $(resultTitleDiv).append($("#msm_subordinate_infoTitle-"+index).val());
     
         var resultContentDiv = document.createElement("div");
-        resultContentDiv.id = "msm_subordinate_infoContent-"+index+"-"+_subIndex;
+        resultContentDiv.id = "msm_subordinate_infoContent-"+idString;
     
         $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).val());
     
         resultContainer.appendChild(resultSelectDiv);
         resultContainer.appendChild(resultTitleDiv);
         resultContainer.appendChild(resultContentDiv);
+        
+        _subIndex++;
     
         return resultContainer;
     }

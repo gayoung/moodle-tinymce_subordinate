@@ -45,10 +45,10 @@
                 makeSubordinateDialog(ed, indexNumber);
                                
                          
-//                init(ed.selection.getContent(), indexNumber);
-//                
-//                loadValues(ed, indexNumber);
-//                
+                //                init(ed.selection.getContent(), indexNumber);
+                //                
+                //                loadValues(ed, indexNumber);
+                //                
                 // to fix the dialog window size to 80% of window size
                 var wWidth = $(window).width();
                 var wHeight = $(window).height();
@@ -257,6 +257,22 @@ function makeSubordinateDialog(ed, idNumber)
         });
         $('#msm_subordinate_container-'+idNumber).empty();
         container.appendChild(dialogwhole);
+    }
+    
+    var selectedNode = null;
+        
+    if($.browser.msie)
+    {
+        selectedNode = ed.selection.getNode().childNodes[0].tagName;
+    }
+    else
+    {
+        selectedNode = ed.selection.getNode().tagName;
+    }   
+    
+    if(selectedNode == "A")
+    {
+        loadPreviousData(ed, idNumber);
     }
     
     
