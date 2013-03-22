@@ -158,6 +158,17 @@ function makeSubordinateDialog(ed, idNumber)
     selectTypeOption4.setAttribute("value", "External Reference");
     var selectTypeOption4Value = document.createTextNode('External Reference');
     
+    var selectedNode = null;
+        
+    if($.browser.msie)
+    {
+        selectedNode = ed.selection.getNode().childNodes[0].tagName;
+    }
+    else
+    {
+        selectedNode = ed.selection.getNode().tagName;
+    } 
+    
     selectTypeOption1.setAttribute("selected", "selected");
     
     selectTypeOption1.appendChild(selectTypeOption1Value);
@@ -259,21 +270,10 @@ function makeSubordinateDialog(ed, idNumber)
         container.appendChild(dialogwhole);
     }
     
-    var selectedNode = null;
-        
-    if($.browser.msie)
-    {
-        selectedNode = ed.selection.getNode().childNodes[0].tagName;
-    }
-    else
-    {
-        selectedNode = ed.selection.getNode().tagName;
-    }   
-    
     if(selectedNode == "A")
     {
+        changeSelectIndex(ed, idNumber);
         loadPreviousData(ed, idNumber);
-    }
-    
+    }  
     
 }
