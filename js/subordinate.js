@@ -354,7 +354,7 @@ function closeSubFormDialog(id)
 function submitSubForm(ed, id)
 {  
     var selectedText = ed.selection.getContent();
-    //        
+            
     var selectedNode = null;
         
     if($.browser.msie)
@@ -420,7 +420,8 @@ function submitSubForm(ed, id)
                 newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";                       
 
             }
-            ed.selection.setContent(newContent); 
+            console.log(newContent);
+            ed.selection.setContent(newContent + ' html'); 
         }    
         closeSubFormDialog(id);
     }
