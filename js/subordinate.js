@@ -411,17 +411,16 @@ function submitSubForm(ed, id)
         var newContent = '';             
         if(selectedNode != "A")
         {           
-            if(urltext != '')
+            if((urltext != '') &&(urltext != null) &&(typeof urltext !== "undefined"))
             {
                 newContent = "<a href='"+$.trim(urltext)+"' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> "; 
             }
             else
             {
-                newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";                       
-
+                newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";   
             }
-            console.log(newContent);
-            ed.selection.setContent(newContent + ' html'); 
+           
+            ed.selection.setContent(newContent); 
         }    
         closeSubFormDialog(id);
     }
