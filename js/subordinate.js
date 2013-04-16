@@ -223,11 +223,29 @@ function makeInfoForm(ed, id)
 function loadPreviousData(editor, id)
 { 
     var selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
+    var editorIdInfo = editor.id.split("-");
+    var editorTypeInfo = editor.id.split("_");
     
+    console.log(editorIdInfo);
+       
     var indexId = '';
-    for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
+    
+    switch(editorTypeInfo[1])
     {
-        indexId += selectedAnchorIdInfo[i] + "-";
+        case "def":
+            indexId += "defcontent";
+            break;
+        case "theorem":
+            indexId += "theoremcontent";
+            break;
+        case "comment":
+            indexId += "commentcontent";
+            break;
+    }
+    
+    for(var i=1; i < editorIdInfo.length; i++)
+    {
+        indexId += editorIdInfo[i] + "-";
     }
     indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
        
@@ -235,6 +253,8 @@ function loadPreviousData(editor, id)
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
     var prevInfoContentValue = null;
+    
+    console.log("indexId: "+indexId);
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
         if(this.id == 'msm_subordinate_select-'+indexId)
@@ -253,11 +273,11 @@ function loadPreviousData(editor, id)
         {
             prevInfoContentValue = $(this).html();
         }
-    });
+    }); 
     
+    console.log("id for select: "+id);
     
     var select = document.getElementById("msm_subordinate_select-"+id);
-    //    var select = $("#msm_subordinate_form-"+id+ " #msm_subordinate_select-"+id);
         
     switch(prevSelectValue)
     {
@@ -398,7 +418,7 @@ function submitSubForm(ed, id)
         {
             subIndex+= subordinateDivIndexInfo[i]+"-";
         }
-        subIndex += subordinateDivIndexInfo[subordinateDivIndexInfo.length-1];    
+        subIndex += subordinateDivIndexInfo[subordinateDivIndexInfo.length-1];
     
         $("#msm_subordinate_result_container-"+id).append(newSubordinateDiv);
         

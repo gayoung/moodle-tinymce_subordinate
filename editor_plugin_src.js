@@ -43,12 +43,7 @@
                 indexNumber += idNumber[idNumber.length-1]; 
                 
                 makeSubordinateDialog(ed, indexNumber);
-                               
-                         
-                //                init(ed.selection.getContent(), indexNumber);
-                //                
-                //                loadValues(ed, indexNumber);
-                //                
+                
                 // to fix the dialog window size to 80% of window size
                 var wWidth = $(window).width();
                 var wHeight = $(window).height();
@@ -180,7 +175,7 @@ function makeSubordinateDialog(ed, idNumber)
     var dialogButtonContainer = document.createElement('div');
     var saveButton = document.createElement('input');
     var cancelButton = document.createElement('input');  
-   
+    
     container = document.getElementById('msm_subordinate_container-'+idNumber);        
     dialogwhole.id = 'msm_subordinate-'+idNumber;
     container.setAttribute("title", "Create Subordinate");
