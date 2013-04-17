@@ -7,7 +7,6 @@
  * License: http://tinymce.moxiecode.com/license
  * Contributing: http://tinymce.moxiecode.com/contributing
  */
-
 (function() {
     // Load plugin specific language pack
     tinymce.PluginManager.requireLangPack('subordinate');
@@ -26,21 +25,20 @@
                        
             ed.addCommand('mceSubordinate', function() { 
                 var idNumber;
-                var indexNumber;                
+                var indexNumber;  
                 
                 var type = ed.editorId.split("_");   
                 var lasttype = type[2].split("-");
                 
-                idNumber= ed.editorId.split("-");  
-                
+                idNumber= ed.editorId.split("-");                 
                 indexNumber = type[1]+lasttype[0];
-                
+                                
                 for(var i=1; i < idNumber.length-1; i++)
                 {
                     indexNumber += idNumber[i] + "-";
                 }                
                     
-                indexNumber += idNumber[idNumber.length-1]; 
+                indexNumber += idNumber[idNumber.length-1];              
                 
                 makeSubordinateDialog(ed, indexNumber);
                 

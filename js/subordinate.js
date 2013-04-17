@@ -223,38 +223,20 @@ function makeInfoForm(ed, id)
 function loadPreviousData(editor, id)
 { 
     var selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
-    var editorIdInfo = editor.id.split("-");
-    var editorTypeInfo = editor.id.split("_");
     
-    console.log(editorIdInfo);
-       
     var indexId = '';
-    
-    switch(editorTypeInfo[1])
+    for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
     {
-        case "def":
-            indexId += "defcontent";
-            break;
-        case "theorem":
-            indexId += "theoremcontent";
-            break;
-        case "comment":
-            indexId += "commentcontent";
-            break;
-    }
-    
-    for(var i=1; i < editorIdInfo.length; i++)
-    {
-        indexId += editorIdInfo[i] + "-";
+        indexId += selectedAnchorIdInfo[i] + "-";
     }
     indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
        
     var prevSelectValue = null;
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
-    var prevInfoContentValue = null;
+    var prevInfoContentValue = null;    
     
-    console.log("indexId: "+indexId);
+    console.log("loadPreviousData subordinate result id: "+indexId);
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
         if(this.id == 'msm_subordinate_select-'+indexId)
@@ -273,10 +255,8 @@ function loadPreviousData(editor, id)
         {
             prevInfoContentValue = $(this).html();
         }
-    }); 
-    
-    console.log("id for select: "+id);
-    
+    });
+        
     var select = document.getElementById("msm_subordinate_select-"+id);
         
     switch(prevSelectValue)
@@ -390,7 +370,7 @@ function submitSubForm(ed, id)
     
     if(selectedNode != 'A')
     {
-        newSubordinateDiv = createSubordinateDiv(id, id+"-"+_subIndex);  
+        newSubordinateDiv = createSubordinateDiv(id, id+"-"+_subIndex, '');  
     }
     else
     {
@@ -455,15 +435,30 @@ function replaceSubordinateDiv(index, hotId)
             $(this).empty().remove();
         }
     });
+    
+    console.log("in replaceSubordinateDiv --> hotID: "+hotId);
    
-    var subordinateResultContainer = createSubordinateDiv(index, hotId);
+    var subordinateResultContainer = createSubordinateDiv(index, hotId, "replace");
    
     return subordinateResultContainer;
 }
 
-function createSubordinateDiv(index, idString)
+function createSubordinateDiv(index, oldidString, flag)
 {
+    var idString = '';
     var errorArray = [];
+    
+    // no need to check for duplicate id if replacing already existing one...
+    if(flag == '')
+    {
+        var oldidStringInfo = oldidString.split("-");
+    
+        idString = checkForExistence(oldidString) + "-" + oldidStringInfo[oldidStringInfo.length-1]; 
+    }
+    else if(flag == "replace")
+    {
+        idString = oldidString;
+    }    
     
     var resultContainer = document.createElement("div");
     resultContainer.id = "msm_subordinate_result-"+idString;
@@ -600,4 +595,47 @@ function changeSelectIndex(ed, id)
             select.selectedIndex = 3;
             break;
     }  
+}
+
+function checkForExistence(oldtestId)
+{
+    console.log("in new method");
+    var newTestId = '';
+    
+    var testIdInfo = oldtestId.split("-");
+    var testId = '';
+         
+    for(var i = 1; i < testIdInfo.length-2; i++)
+    {
+        testId += testIdInfo[i] + "-";
+    }
+    testId += testIdInfo[testIdInfo.length-2];
+    
+    newTestId = testId;
+        
+    $("#msm_child_appending_area").find(".msm_subordinate_results").each(function() {
+        var existingIdInfo = this.id.split("-");
+        var existingId = '';
+         
+        for(var i = 1; i < existingIdInfo.length-1; i++)
+        {
+            existingId += existingIdInfo[i] + "-";
+        }
+        existingId += existingIdInfo[existingIdInfo.length-1];
+             
+        if(oldtestId == existingId)
+        {
+            console.log("testId: "+testId);
+            console.log("existingId: "+existingId);
+            
+            var lastChar = testId.charAt(testId.length-1);
+            var newlastchar = parseInt(lastChar)+1;
+            newTestId = testId.substring(0, testId.length-1) + newlastchar;
+            console.log("newTestId: "+newTestId);
+            checkForExistence(newTestId);
+        }
+    });
+    
+    console.log("checkForExistence return value: "+newTestId);
+    return newTestId;
 }
