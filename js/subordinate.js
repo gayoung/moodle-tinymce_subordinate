@@ -235,8 +235,6 @@ function loadPreviousData(editor, id)
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
     var prevInfoContentValue = null;    
-    
-    console.log("loadPreviousData subordinate result id: "+indexId);
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
         if(this.id == 'msm_subordinate_select-'+indexId)
@@ -435,8 +433,6 @@ function replaceSubordinateDiv(index, hotId)
             $(this).empty().remove();
         }
     });
-    
-    console.log("in replaceSubordinateDiv --> hotID: "+hotId);
    
     var subordinateResultContainer = createSubordinateDiv(index, hotId, "replace");
    
@@ -599,7 +595,6 @@ function changeSelectIndex(ed, id)
 
 function checkForExistence(oldtestId)
 {
-    console.log("in new method");
     var newTestId = '';
     
     var testIdInfo = oldtestId.split("-");
@@ -625,17 +620,12 @@ function checkForExistence(oldtestId)
              
         if(oldtestId == existingId)
         {
-            console.log("testId: "+testId);
-            console.log("existingId: "+existingId);
-            
             var lastChar = testId.charAt(testId.length-1);
             var newlastchar = parseInt(lastChar)+1;
             newTestId = testId.substring(0, testId.length-1) + newlastchar;
-            console.log("newTestId: "+newTestId);
             checkForExistence(newTestId);
         }
     });
     
-    console.log("checkForExistence return value: "+newTestId);
     return newTestId;
 }
