@@ -26,12 +26,29 @@
             ed.addCommand('mceSubordinate', function() { 
                 var idNumber;
                 var indexNumber;  
+                var lasttype;
                 
                 var type = ed.editorId.split("_");   
-                var lasttype = type[2].split("-");
                 
                 idNumber= ed.editorId.split("-");                 
-                indexNumber = type[1]+lasttype[0];
+                
+                if(type[1] == "theorem")
+                {
+                    if(type[2] == "content")
+                    {
+                        indexNumber = "statementtheoremcontent"
+                    }
+                    else if(type[2] ==  "part")
+                    {
+                        indexNumber = "parttheoremcontent"
+                    }
+                }
+                else
+                {
+                    lasttype = type[2].split("-");
+
+                    indexNumber = type[1]+lasttype[0];
+                }               
                                 
                 for(var i=1; i < idNumber.length-1; i++)
                 {
@@ -126,6 +143,8 @@
 
 function makeSubordinateDialog(ed, idNumber)
 {
+    console.log("idNumber: "+idNumber);
+    
     var container;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');

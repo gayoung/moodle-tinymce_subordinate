@@ -350,7 +350,7 @@ function closeSubFormDialog(id)
  *  @param string          id --> ending of HTML ID of the subordinate components to make them unique
  **/
 function submitSubForm(ed, id)
-{  
+{
     var selectedText = ed.selection.getContent();
             
     var selectedNode = null;
@@ -454,7 +454,7 @@ function createSubordinateDiv(index, oldidString, flag)
     else if(flag == "replace")
     {
         idString = oldidString;
-    }    
+    }   
     
     var resultContainer = document.createElement("div");
     resultContainer.id = "msm_subordinate_result-"+idString;
@@ -598,13 +598,12 @@ function checkForExistence(oldtestId)
     var newTestId = '';
     
     var testIdInfo = oldtestId.split("-");
-    var testId = '';
+    var testId = testIdInfo[0];
          
-    for(var i = 1; i < testIdInfo.length-2; i++)
+    for(var i = 1; i <= testIdInfo.length-2; i++)
     {
-        testId += testIdInfo[i] + "-";
+        testId += "-"+testIdInfo[i] ;
     }
-    testId += testIdInfo[testIdInfo.length-2];
     
     newTestId = testId;
         
