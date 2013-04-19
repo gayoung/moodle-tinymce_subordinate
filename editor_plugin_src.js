@@ -32,6 +32,8 @@
                 
                 idNumber= ed.editorId.split("-");                 
                 
+                console.log("editorID: "+ed.editorId);
+                
                 if(type[1] == "theorem")
                 {
                     if(type[2] == "content")
@@ -42,6 +44,10 @@
                     {
                         indexNumber = "parttheoremcontent"
                     }
+                }
+                else if(type[1] == "info")
+                {
+                    indexNumber = "infocontent";
                 }
                 else
                 {
@@ -143,6 +149,7 @@
 
 function makeSubordinateDialog(ed, idNumber)
 {    
+    console.log("idNumber: "+idNumber);
     var container;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
