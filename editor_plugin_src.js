@@ -142,9 +142,7 @@
 })();
 
 function makeSubordinateDialog(ed, idNumber)
-{
-    console.log("idNumber: "+idNumber);
-    
+{    
     var container;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
