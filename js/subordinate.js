@@ -349,7 +349,7 @@ function closeSubFormDialog(id)
  *  @param tinyMCE object  ed --> the id of the editor where the popup was triggered from
  *  @param string          id --> ending of HTML ID of the subordinate components to make them unique
  **/
-function submitSubForm(ed, id)
+function submitSubForm(ed, id, subId)
 {
     var selectedText = ed.selection.getContent();
             
@@ -366,6 +366,8 @@ function submitSubForm(ed, id)
     
     var newSubordinateDiv = null;
     
+    console.log("submitSubForm selectedNode: "+selectedNode);
+    
     if(selectedNode != 'A')
     {
         newSubordinateDiv = createSubordinateDiv(id, id+"-"+_subIndex, '');  
@@ -380,7 +382,7 @@ function submitSubForm(ed, id)
         }
         textId+= textIdInfo[textIdInfo.length-1];        
         
-        newSubordinateDiv = replaceSubordinateDiv(id, textId);
+        newSubordinateDiv = replaceSubordinateDiv(id, textId, subId);
     }
             
     if(newSubordinateDiv instanceof Array)
@@ -397,8 +399,17 @@ function submitSubForm(ed, id)
             subIndex+= subordinateDivIndexInfo[i]+"-";
         }
         subIndex += subordinateDivIndexInfo[subordinateDivIndexInfo.length-1];
+        
+        if(subId != '')
+        {
+            $("#msm_subordinate_result_container-"+subId).append(newSubordinateDiv);
+
+        }
+        else
+        {
+            $("#msm_subordinate_result_container-"+id).append(newSubordinateDiv);
+        }
     
-        $("#msm_subordinate_result_container-"+id).append(newSubordinateDiv);
         
         var urltext = '';        
         if($("#msm_subordinate_url-"+id).val() != '')
@@ -425,9 +436,9 @@ function submitSubForm(ed, id)
    
 }
 
-function replaceSubordinateDiv(index, hotId)
+function replaceSubordinateDiv(index, hotId, subId)
 {
-    $("#msm_subordinate_result_container-"+index).children("div").each(function() {
+    $("#msm_subordinate_result_container-"+subId).children("div").each(function() {
         if(this.id == "msm_subordinate_result-"+hotId)
         {
             $(this).empty().remove();
@@ -627,4 +638,78 @@ function checkForExistence(oldtestId)
     });
     
     return newTestId;
+}
+
+function createDialog(ed, idNumber)
+{
+    // to fix the dialog window size to 80% of window size
+    var wWidth = $(window).width();
+    var wHeight = $(window).height();
+                
+    var dWidth = wWidth*0.6;
+    var dHeight = wHeight*0.8;
+                
+    $('#msm_subordinate_container-'+idNumber).dialog({
+        open: function(event, ui) { 
+            $(".ui-dialog-titlebar-close").hide();  //  disabling the close button 
+            $("#msm_subordinate_highlighted-"+idNumber).val(ed.selection.getContent({
+                format : 'text'
+            }));
+            initInfoEditor(idNumber);
+        },
+        modal:true,
+        autoOpen: false,
+        height: dHeight,
+        width: dWidth,
+        closeOnEscape: false
+    });
+    $('#msm_subordinate_container-'+idNumber).dialog('open').css('display', 'block');
+}
+
+function findParentDiv(idEnding)
+{
+    var parent = null;
+    var typeString = idEnding.substr(0, idEnding.length-1);
+    var typeId = idEnding.charAt(idEnding.length-1);
+    
+    switch(typeString)
+    {
+        case "defcontent":
+            parent = document.getElementById("copied_msm_def-"+typeId);
+            break;
+        case "statementtheoremcontent":
+            break;
+        case "parttheoremcontent":
+            break;
+        case "commentcontent":
+            break;
+    }
+    
+    return parent;
+}
+
+function isExistingIndex(oldid)
+{
+    console.log("at isExistingIndex function: "+oldid);
+    var newId = '';
+    var existingDiv = document.getElementById("msm_subordinate_container-"+oldid);
+   
+    if(existingDiv)
+    {
+        var oldidInfo = oldid.split("-");
+        
+        var idInt = parseInt(oldidInfo[1])+1;
+           
+        newId = oldidInfo[0]+"-"+idInt;
+           
+        console.log("before recursive call: "+newId);
+           
+        newId = isExistingIndex(newId);           
+    }
+    else
+    {
+        newId = oldid;
+    }
+    console.log("function return value: "+newId);
+    return newId;
 }
