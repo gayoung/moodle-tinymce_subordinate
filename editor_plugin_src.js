@@ -143,7 +143,8 @@
 
 function makeSubordinateDialog(ed, idNumber, isSub)
 {    
-    var container;
+    console.log("idNumber: "+idNumber);
+    var container = null;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
     var dialogFormContainer = document.createElement('div');
@@ -195,6 +196,8 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     {       
         if(selectedNode != 'A')
         {
+            console.log("not A?");
+            console.log("sectedNode then?: "+selectedNode);
             container = document.createElement("div");   
             idNumber = isExistingIndex(idNumber+"-1"); 
             
@@ -215,7 +218,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             else
             {
                 wordId = ed.selection.getNode().id;
-            } 
+            }
             var wordIdInfo = wordId.split("-");
             
             var tempIdNumber = '';
@@ -226,8 +229,14 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }
             tempIdNumber += wordIdInfo[wordIdInfo.length-2];
             
-            idNumber  = tempIdNumber;            
-            container = document.getElementById('msm_subordinate_container-'+idNumber);      
+            idNumber = tempIdNumber;
+            
+            console.log("a element idNumber: "+idNumber);
+            $(document).find(".msm_subordinate_containers").each(function() {
+                console.log("subordinate containers: "+this.id);
+            });
+            
+            container = document.getElementById('msm_subordinate_container-'+idNumber); 
         }      
     }
     else

@@ -222,7 +222,9 @@ function makeInfoForm(ed, id)
 
 function loadPreviousData(editor, id)
 { 
+    console.log("loadPreviousData");
     var selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
+    console.log(selectedAnchorIdInfo);
     
     var indexId = '';
     for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
@@ -234,7 +236,7 @@ function loadPreviousData(editor, id)
     var prevSelectValue = null;
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
-    var prevInfoContentValue = null;    
+    var prevInfoContentValue = null;   
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
         if(this.id == 'msm_subordinate_select-'+indexId)
@@ -415,6 +417,8 @@ function submitSubForm(ed, id, subId)
         {
             urltext = $("#msm_subordinate_url-"+id).val();
         }
+             
+        console.log("subIndex: "+subIndex)
              
         var newContent = '';             
         if(selectedNode != "A")
