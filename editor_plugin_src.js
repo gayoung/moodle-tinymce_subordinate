@@ -31,7 +31,7 @@
                 
                 var type = ed.editorId.split("_");   
                 
-                idNumber= ed.editorId.split("-");                 
+                idNumber= ed.editorId.split("-");    
                 
                 if(type[1] == "theorem")
                 {
@@ -198,8 +198,6 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             container = document.createElement("div");   
             idNumber = isExistingIndex(idNumber+"-1"); 
             
-            console.log("sub non A element: "+idNumber);
-            
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
              
@@ -228,15 +226,12 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }
             tempIdNumber += wordIdInfo[wordIdInfo.length-2];
             
-            idNumber  = tempIdNumber;
-            
-            console.log("A in sub idNumber for container: "+idNumber);
+            idNumber  = tempIdNumber;            
             container = document.getElementById('msm_subordinate_container-'+idNumber);      
         }      
     }
     else
     {
-        console.log("non-sub container idNumber: "+idNumber);
         container = document.getElementById('msm_subordinate_container-'+idNumber);      
     }
         

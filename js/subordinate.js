@@ -364,9 +364,7 @@ function submitSubForm(ed, id, subId)
         selectedNode = ed.selection.getNode().tagName;
     }    
     
-    var newSubordinateDiv = null;
-    
-    console.log("submitSubForm selectedNode: "+selectedNode);
+    var newSubordinateDiv = null;   
     
     if(selectedNode != 'A')
     {
@@ -402,7 +400,8 @@ function submitSubForm(ed, id, subId)
         
         if(subId != '')
         {
-            $("#msm_subordinate_result_container-"+subId).append(newSubordinateDiv);
+            var subparent = findParentDiv(subId);
+            $(subparent).find(".msm_subordinate_result_containers").eq(0).append(newSubordinateDiv);     
 
         }
         else
@@ -438,7 +437,10 @@ function submitSubForm(ed, id, subId)
 
 function replaceSubordinateDiv(index, hotId, subId)
 {
-    $("#msm_subordinate_result_container-"+subId).children("div").each(function() {
+    // need grab the parent to get the id of the result container
+    // (this generic code allows the plugin to have nested subordinates)
+    var subparent = findParentDiv(subId);      
+    $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
         if(this.id == "msm_subordinate_result-"+hotId)
         {
             $(this).empty().remove();
@@ -669,20 +671,43 @@ function createDialog(ed, idNumber)
 function findParentDiv(idEnding)
 {
     var parent = null;
-    var typeString = idEnding.substr(0, idEnding.length-1);
-    var typeId = idEnding.charAt(idEnding.length-1);
+    var matchInfo = null;
+    var typeId = null;
     
-    switch(typeString)
+    var defPattern = /^\S*(defcontent\d+\S*)$/;
+    var statementTheoremPattern = /^\S*(statementtheoremcontent\d+\S*)$/;
+    var partTheoremPattern = /^\S*(parttheoremcontent\d+\S*)$/;
+    var commentPattern = /^\S*(commentcontent\d+\S*)$/;
+    var bodyPattern = /^\S*(bodycontent\d+\S*)$/;
+    var introPattern = /^\S*(introcontent\d+\S*)$/;
+    
+    
+    var defmatch = idEnding.match(defPattern);
+    var statementmatch = idEnding.match(statementTheoremPattern);    
+    var partmatch = idEnding.match(partTheoremPattern);
+    var commentmatch = idEnding.match(commentPattern);
+    var bodymatch = idEnding.match(bodyPattern);
+    var intromatch = idEnding.match(introPattern);
+    
+    if(defmatch)
     {
-        case "defcontent":
-            parent = document.getElementById("copied_msm_def-"+typeId);
-            break;
-        case "statementtheoremcontent":
-            break;
-        case "parttheoremcontent":
-            break;
-        case "commentcontent":
-            break;
+        matchInfo = defmatch[0].split("-");
+        
+        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+        
+        parent = document.getElementById("copied_msm_def-"+typeId);
+    }
+    else if(commentmatch)
+    {
+        matchInfo = commentmatch[0].split("-");
+        
+        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+        for(var i = 1; i < matchInfo.length-1; i++)
+        {
+            typeId += "-" + matchInfo[i];
+        }            
+        
+        parent = document.getElementById("copied_msm_comment-"+typeId); 
     }
     
     return parent;
@@ -690,7 +715,6 @@ function findParentDiv(idEnding)
 
 function isExistingIndex(oldid)
 {
-    console.log("at isExistingIndex function: "+oldid);
     var newId = '';
     var existingDiv = document.getElementById("msm_subordinate_container-"+oldid);
    
@@ -700,9 +724,7 @@ function isExistingIndex(oldid)
         
         var idInt = parseInt(oldidInfo[1])+1;
            
-        newId = oldidInfo[0]+"-"+idInt;
-           
-        console.log("before recursive call: "+newId);
+        newId = oldidInfo[0]+"-"+idInt;           
            
         newId = isExistingIndex(newId);           
     }
@@ -710,6 +732,5 @@ function isExistingIndex(oldid)
     {
         newId = oldid;
     }
-    console.log("function return value: "+newId);
     return newId;
 }
