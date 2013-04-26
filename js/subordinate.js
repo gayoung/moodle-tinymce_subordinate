@@ -104,6 +104,7 @@ function changeForm(e, ed, id) {
 
 function initInfoEditor(id)
 {
+    console.log("initInfoEditor id: "+id);
     var titleid = "msm_subordinate_infoTitle-"+id;
     var contentid = "msm_subordinate_infoContent-"+id;
     
@@ -222,9 +223,7 @@ function makeInfoForm(ed, id)
 
 function loadPreviousData(editor, id)
 { 
-    console.log("loadPreviousData");
     var selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
-    console.log(selectedAnchorIdInfo);
     
     var indexId = '';
     for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
@@ -238,7 +237,7 @@ function loadPreviousData(editor, id)
     var prevInfoTitleValue = null;
     var prevInfoContentValue = null;   
    
-    $('#msm_subordinate_result-'+indexId).children('div').each(function() {
+    $('#msm_subordinate_result-'+indexId).children('div').each(function() {        
         if(this.id == 'msm_subordinate_select-'+indexId)
         {
             prevSelectValue = $(this).text();
@@ -254,7 +253,7 @@ function loadPreviousData(editor, id)
         else if(this.id == 'msm_subordinate_infoContent-'+indexId)
         {
             prevInfoContentValue = $(this).html();
-        }
+        }        
     });
         
     var select = document.getElementById("msm_subordinate_select-"+id);
@@ -281,7 +280,7 @@ function loadPreviousData(editor, id)
         $("#msm_subordinate_content_form_container-"+id).prepend(urlFieldSet);
         $("#msm_subordinate_form-"+id+ " #msm_subordinate_url-"+id).val(prevUrlValue);        
     }
-    
+
     $(".msm_subordinate_textareas").each(function() {
         if(this.id == "msm_subordinate_infoTitle-"+id)
         {
@@ -417,9 +416,7 @@ function submitSubForm(ed, id, subId)
         {
             urltext = $("#msm_subordinate_url-"+id).val();
         }
-             
-        console.log("subIndex: "+subIndex)
-             
+        
         var newContent = '';             
         if(selectedNode != "A")
         {           
@@ -704,12 +701,8 @@ function findParentDiv(idEnding)
     else if(commentmatch)
     {
         matchInfo = commentmatch[0].split("-");
-        
+      
         typeId = matchInfo[0].charAt(matchInfo[0].length-1);
-        for(var i = 1; i < matchInfo.length-1; i++)
-        {
-            typeId += "-" + matchInfo[i];
-        }            
         
         parent = document.getElementById("copied_msm_comment-"+typeId); 
     }

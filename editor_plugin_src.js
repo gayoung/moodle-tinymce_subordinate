@@ -25,14 +25,28 @@
                        
             ed.addCommand('mceSubordinate', function() { 
                 var idNumber;
-                var indexNumber;  
+                var indexNumber = '';  
                 var lasttype;
                 var subFlag = ''; // to determine if the subordinate plugin was activated by another subordinate plugin editor
+                var flag = false;
                 
-                var type = ed.editorId.split("_");   
+                console.log("editor ID: "+ed.editorId);
                 
-                idNumber= ed.editorId.split("-");    
+                var type = ed.editorId.split("_");  
+                var aElementNode = ed.selection.getNode().id;
                 
+                console.log("anchored Element id: "+aElementNode);
+                
+                if((aElementNode == '') || (aElementNode === 'undefined'))
+                {
+                    idNumber= ed.editorId.split("-");   
+                }
+                else
+                {
+                    flag = true;
+                    idNumber = aElementNode.split("-");
+                }
+                 
                 if(type[1] == "theorem")
                 {
                     if(type[2] == "content")
@@ -61,15 +75,21 @@
                     subFlag = tempString;
                     
                     lasttype = type[2].split("-");
-
-                    indexNumber = type[1]+lasttype[0];
+                    
+                    if(!flag)
+                    {
+                        indexNumber = type[1]+lasttype[0];
+                    }
                 }                    
                     
                 else
                 {
                     lasttype = type[2].split("-");
 
-                    indexNumber = type[1]+lasttype[0];
+                    if(!flag)
+                    {
+                        indexNumber = type[1]+lasttype[0];
+                    }
                 }               
                                 
                 for(var i=1; i < idNumber.length-1; i++)
@@ -144,6 +164,7 @@
 function makeSubordinateDialog(ed, idNumber, isSub)
 {    
     console.log("idNumber: "+idNumber);
+    console.log("isSub: "+isSub);
     var container = null;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
@@ -321,14 +342,21 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     }
     else
     {
-        $('#msm_subordinate_container-'+idNumber+" textarea").each(function() {
+        var idInfo = idNumber.split("-");
+        var editorInfo = ed.editorId.split("-");
+        
+        var containerId = idInfo[0].substr(0,idInfo[0].length-1)+editorInfo[1];
+        
+        console.log("containerId: "+containerId);
+        
+        $('#msm_subordinate_container-'+containerId+" textarea").each(function() {
             if(tinymce.getInstanceById($(this).attr("id")) != null)
             {
                 tinymce.execCommand('mceFocus', false, $(this).attr("id"));  
                 tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
             }
         });
-        $('#msm_subordinate_container-'+idNumber).empty();
+        $('#msm_subordinate_container-'+containerId).empty();
         container.appendChild(dialogwhole);
     }
     
