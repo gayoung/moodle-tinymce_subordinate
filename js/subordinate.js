@@ -2,13 +2,13 @@
 var _subIndex = 1;
 //
 //function init(content, id){
-//    var selectedText;
-//   
-//    selectedText= document.getElementById('msm_subordinate_highlighted-'+id);
-//   
-//    selectedText.value = content;     
-//}    
-//        
+// var selectedText;
+//
+// selectedText= document.getElementById('msm_subordinate_highlighted-'+id);
+//
+// selectedText.value = content;
+//}
+//
 function changeForm(e, ed, id) {
     var container = document.getElementById("msm_subordinate_content_form_container-"+id);
     var selectVal;
@@ -50,9 +50,9 @@ function changeForm(e, ed, id) {
                 format: "html"
             });
         }
-    });    
+    });
     
-    var fieldset = makeInfoForm(ed, id);  
+    var fieldset = makeInfoForm(ed, id);
     
     //-----------------------------start of external url form-----------------------------//
     var urlFieldSet = appendUrlForm(id);
@@ -63,7 +63,7 @@ function changeForm(e, ed, id) {
         {
             container.removeChild(container.firstChild);
         }
-    }    
+    }
     // remove URL form if already attached
     if($("#msm_subordinate_url-"+id))
     {
@@ -71,7 +71,7 @@ function changeForm(e, ed, id) {
     }
         
     switch(selectVal)
-    {       
+    {
         case 0:
             container.appendChild(fieldset);
             break;
@@ -84,7 +84,7 @@ function changeForm(e, ed, id) {
             break;
         case 3:
             alert("external ref");
-            break;           
+            break;
     }
     
     $("#msm_subordinate_form-"+id).find(".msm_subordinate_textareas").each(function() {
@@ -99,12 +99,11 @@ function changeForm(e, ed, id) {
     });
     
     
-    initInfoEditor(id);    
+    initInfoEditor(id);
 }
 
 function initInfoEditor(id)
 {
-    console.log("initInfoEditor id: "+id);
     var titleid = "msm_subordinate_infoTitle-"+id;
     var contentid = "msm_subordinate_infoContent-"+id;
     
@@ -170,9 +169,9 @@ function initInfoEditor(id)
 }
 
 function makeInfoForm(ed, id)
-{           
+{
     // making a fieldset element for the info form (all selection will be using it
-    // so make it available to all switch cases)    
+    // so make it available to all switch cases)
     var fieldset = document.createElement("fieldset");
     fieldset.setAttribute("style", "border:1px solid black; padding: 2%; margin-top: 1%;");
         
@@ -190,16 +189,16 @@ function makeInfoForm(ed, id)
     var infoContent = document.createTextNode("Information Content: ");
     
     var infoTitleInput = document.createElement("textarea");
-    var infoContentInput = document.createElement("textarea");  
+    var infoContentInput = document.createElement("textarea");
           
-    infoTitleLabel.setAttribute("for", "msm_subordinate_infoTitle-"+id);        
+    infoTitleLabel.setAttribute("for", "msm_subordinate_infoTitle-"+id);
     infoTitleLabel.appendChild(infoTitle);
         
     infoTitleInput.id = "msm_subordinate_infoTitle-"+id;
     infoTitleInput.name = "msm_subordinate_infoTitle-"+id;
-    infoTitleInput.className = "msm_subordinate_textareas";        
+    infoTitleInput.className = "msm_subordinate_textareas";
         
-    infoContentLabel.setAttribute("for", "msm_subordinate_infoContent-"+id);        
+    infoContentLabel.setAttribute("for", "msm_subordinate_infoContent-"+id);
     infoContentLabel.appendChild(infoContent);
     
     infoContentInput.id = "msm_subordinate_infoContent-"+id;
@@ -210,34 +209,62 @@ function makeInfoForm(ed, id)
     fieldset.appendChild(infoLegend);
     infotitlediv.appendChild(infoTitleLabel);
     infotitlediv.appendChild(infoTitleInput);
-    fieldset.appendChild(infotitlediv);        
+    fieldset.appendChild(infotitlediv);
         
     fieldset.appendChild(document.createElement("br"));
         
-    infocontentdiv.appendChild(infoContentLabel);        
+    infocontentdiv.appendChild(infoContentLabel);
     infocontentdiv.appendChild(infoContentInput);
-    fieldset.appendChild(infocontentdiv);    
+    fieldset.appendChild(infocontentdiv);
     
     return fieldset;
 }
 
 function loadPreviousData(editor, id)
-{ 
-    var selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
+{
+    console.log("loadPreviousData");
+    var selectedAnchorIdInfo = null;
     
     var indexId = '';
-    for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
+    
+    $(document).find(".msm_subordinate_results").each(function() {
+        $(this).find(".msm_subordinate_hotword_matchs").each(function() {
+            if(editor.selection.getNode().id == $(this).text())
+            {
+                selectedAnchorIdInfo = this.id.split("-");
+                
+                for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
+                {
+                    indexId += selectedAnchorIdInfo[i] + "-";
+                }
+                indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
+            }
+        });
+    });
+    
+    if(indexId == '')
     {
-        indexId += selectedAnchorIdInfo[i] + "-";
+        selectedAnchorIdInfo = editor.selection.getNode().id.split("-");
+            
+        for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
+        {
+            indexId += selectedAnchorIdInfo[i] + "-";
+        }
+        indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
     }
-    indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
-       
+    
+//    for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
+//    {
+//        indexId += selectedAnchorIdInfo[i] + "-";
+//    }
+//    indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
+        
     var prevSelectValue = null;
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
     var prevInfoContentValue = null;   
    
-    $('#msm_subordinate_result-'+indexId).children('div').each(function() {        
+    $('#msm_subordinate_result-'+indexId).children('div').each(function() {
         if(this.id == 'msm_subordinate_select-'+indexId)
         {
             prevSelectValue = $(this).text();
@@ -253,9 +280,9 @@ function loadPreviousData(editor, id)
         else if(this.id == 'msm_subordinate_infoContent-'+indexId)
         {
             prevInfoContentValue = $(this).html();
-        }        
+        }
     });
-        
+            
     var select = document.getElementById("msm_subordinate_select-"+id);
         
     switch(prevSelectValue)
@@ -278,9 +305,9 @@ function loadPreviousData(editor, id)
     {
         var urlFieldSet = appendUrlForm(id);
         $("#msm_subordinate_content_form_container-"+id).prepend(urlFieldSet);
-        $("#msm_subordinate_form-"+id+ " #msm_subordinate_url-"+id).val(prevUrlValue);        
+        $("#msm_subordinate_form-"+id+ " #msm_subordinate_url-"+id).val(prevUrlValue);
     }
-
+    
     $(".msm_subordinate_textareas").each(function() {
         if(this.id == "msm_subordinate_infoTitle-"+id)
         {
@@ -321,7 +348,7 @@ function appendUrlForm(id)
     urlErrorSpan.setAttribute("style", "color: red; display: none; margin-left: 85px;");
     
     var urlErrorSpanText = document.createTextNode("Please enter a valid URL.");
-    urlErrorSpan.appendChild(urlErrorSpanText);    
+    urlErrorSpan.appendChild(urlErrorSpanText);
     
     urlfieldset.appendChild(urlLegend);
     urlfieldset.appendChild(urlLabel);
@@ -336,7 +363,7 @@ function closeSubFormDialog(id)
     $('#msm_subordinate_container-'+id+" textarea").each(function() {
         if(tinymce.getInstanceById($(this).attr("id")) != null)
         {
-            tinymce.execCommand('mceFocus', false, $(this).attr("id"));  
+            tinymce.execCommand('mceFocus', false, $(this).attr("id"));
             tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
         }
     });
@@ -346,10 +373,10 @@ function closeSubFormDialog(id)
 }
 
 /**
- *
- *  @param tinyMCE object  ed --> the id of the editor where the popup was triggered from
- *  @param string          id --> ending of HTML ID of the subordinate components to make them unique
- **/
+*
+* @param tinyMCE object ed --> the id of the editor where the popup was triggered from
+* @param string id --> ending of HTML ID of the subordinate components to make them unique
+**/
 function submitSubForm(ed, id, subId)
 {
     var selectedText = ed.selection.getContent();
@@ -363,13 +390,13 @@ function submitSubForm(ed, id, subId)
     else
     {
         selectedNode = ed.selection.getNode().tagName;
-    }    
+    }
     
-    var newSubordinateDiv = null;   
+    var newSubordinateDiv = null;
     
     if(selectedNode != 'A')
     {
-        newSubordinateDiv = createSubordinateDiv(id, id+"-"+_subIndex, '');  
+        newSubordinateDiv = createSubordinateDiv(id, id+"-"+_subIndex, '');
     }
     else
     {
@@ -379,7 +406,7 @@ function submitSubForm(ed, id, subId)
         {
             textId += textIdInfo[i]+"-";
         }
-        textId+= textIdInfo[textIdInfo.length-1];        
+        textId+= textIdInfo[textIdInfo.length-1];
         
         newSubordinateDiv = replaceSubordinateDiv(id, textId, subId);
     }
@@ -402,7 +429,7 @@ function submitSubForm(ed, id, subId)
         if(subId != '')
         {
             var subparent = findParentDiv(subId);
-            $(subparent).find(".msm_subordinate_result_containers").eq(0).append(newSubordinateDiv);     
+            $(subparent).find(".msm_subordinate_result_containers").eq(0).append(newSubordinateDiv);
 
         }
         else
@@ -411,26 +438,26 @@ function submitSubForm(ed, id, subId)
         }
     
         
-        var urltext = '';        
+        var urltext = '';
         if($("#msm_subordinate_url-"+id).val() != '')
         {
             urltext = $("#msm_subordinate_url-"+id).val();
         }
         
-        var newContent = '';             
+        var newContent = '';
         if(selectedNode != "A")
-        {           
+        {
             if((urltext != '') &&(urltext != null) &&(typeof urltext !== "undefined"))
             {
-                newContent = "<a href='"+$.trim(urltext)+"' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> "; 
+                newContent = "<a href='"+$.trim(urltext)+"' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";
             }
             else
             {
-                newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";   
+                newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";
             }
            
-            ed.selection.setContent(newContent); 
-        }    
+            ed.selection.setContent(newContent);
+        }
         closeSubFormDialog(id);
     }
    
@@ -440,7 +467,7 @@ function replaceSubordinateDiv(index, hotId, subId)
 {
     // need grab the parent to get the id of the result container
     // (this generic code allows the plugin to have nested subordinates)
-    var subparent = findParentDiv(subId);      
+    var subparent = findParentDiv(subId);
     $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
         if(this.id == "msm_subordinate_result-"+hotId)
         {
@@ -463,32 +490,32 @@ function createSubordinateDiv(index, oldidString, flag)
     {
         var oldidStringInfo = oldidString.split("-");
     
-        idString = checkForExistence(oldidString) + "-" + oldidStringInfo[oldidStringInfo.length-1]; 
+        idString = checkForExistence(oldidString) + "-" + oldidStringInfo[oldidStringInfo.length-1];
     }
     else if(flag == "replace")
     {
         idString = oldidString;
-    }   
+    }
     
     var resultContainer = document.createElement("div");
     resultContainer.id = "msm_subordinate_result-"+idString;
     resultContainer.className = "msm_subordinate_results";
     
-    $("#msm_subordinate-"+index+" textarea").each(function(){          
+    $("#msm_subordinate-"+index+" textarea").each(function(){
         this.value = tinymce.get(this.id).getContent({
             format: "html"
-        });       
+        });
        
         if(this.value == '')
         {
             errorArray.push(this.id+"_ifr");
-        }    
-    }); 
+        }
+    });
     
     if(errorArray.length == 0)
     {
         var resultSelectDiv = document.createElement("div");
-        resultSelectDiv.id = "msm_subordinate_select-"+idString;    
+        resultSelectDiv.id = "msm_subordinate_select-"+idString;
         var resultSelectText = document.createTextNode($("#msm_subordinate_select-"+index).val());
         resultSelectDiv.appendChild(resultSelectText);
         
@@ -502,7 +529,7 @@ function createSubordinateDiv(index, oldidString, flag)
         }
     
         var resultTitleDiv = document.createElement("div");
-        resultTitleDiv.id = "msm_subordinate_infoTitle-"+idString;        
+        resultTitleDiv.id = "msm_subordinate_infoTitle-"+idString;
     
         $(resultTitleDiv).append($("#msm_subordinate_infoTitle-"+index).val());
     
@@ -526,11 +553,11 @@ function createSubordinateDiv(index, oldidString, flag)
     else
     {
         return errorArray;
-    }    
+    }
 }
 
 function nullErrorWarning(errorArray, id)
-{ 
+{
     for(var i=0; i < errorArray.length; i++)
     {
         var match = errorArray[i].match(/subordinate.url./);
@@ -551,7 +578,7 @@ function nullErrorWarning(errorArray, id)
         {
             $("#"+errorArray[i]).css("border", "solid 4px #FFA500");
         }
-    }        
+    }
                 
     $("<div class=\"dialogs\" id=\"msm_emptySubContent\"> Please fill out the highlighted areas with appropriate information to complete the form. </div>").appendTo('#msm_subordinate_container-'+id);
 
@@ -563,7 +590,7 @@ function nullErrorWarning(errorArray, id)
                 $(this).dialog("close");
             }
         }
-    }); 
+    });
 }
 
 function changeSelectIndex(ed, id)
@@ -587,7 +614,6 @@ function changeSelectIndex(ed, id)
        
     });
         
-    //    var select = document.getElementById("msm_subordinate_select-"+id);
     var select = $("#msm_subordinate_form-"+id+ " #msm_subordinate_select-"+id);
         
     switch(prevSelectValue)
@@ -604,7 +630,7 @@ function changeSelectIndex(ed, id)
         case "External Reference":
             select.selectedIndex = 3;
             break;
-    }  
+    }
 }
 
 function checkForExistence(oldtestId)
@@ -653,8 +679,8 @@ function createDialog(ed, idNumber)
     var dHeight = wHeight*0.8;
                 
     $('#msm_subordinate_container-'+idNumber).dialog({
-        open: function(event, ui) { 
-            $(".ui-dialog-titlebar-close").hide();  //  disabling the close button 
+        open: function(event, ui) {
+            $(".ui-dialog-titlebar-close").hide(); // disabling the close button
             $("#msm_subordinate_highlighted-"+idNumber).val(ed.selection.getContent({
                 format : 'text'
             }));
@@ -684,7 +710,7 @@ function findParentDiv(idEnding)
     
     
     var defmatch = idEnding.match(defPattern);
-    var statementmatch = idEnding.match(statementTheoremPattern);    
+    var statementmatch = idEnding.match(statementTheoremPattern);
     var partmatch = idEnding.match(partTheoremPattern);
     var commentmatch = idEnding.match(commentPattern);
     var bodymatch = idEnding.match(bodyPattern);
@@ -701,10 +727,10 @@ function findParentDiv(idEnding)
     else if(commentmatch)
     {
         matchInfo = commentmatch[0].split("-");
-      
-        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
         
-        parent = document.getElementById("copied_msm_comment-"+typeId); 
+        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+       
+        parent = document.getElementById("copied_msm_comment-"+typeId);
     }
     
     return parent;
@@ -721,9 +747,9 @@ function isExistingIndex(oldid)
         
         var idInt = parseInt(oldidInfo[1])+1;
            
-        newId = oldidInfo[0]+"-"+idInt;           
+        newId = oldidInfo[0]+"-"+idInt;
            
-        newId = isExistingIndex(newId);           
+        newId = isExistingIndex(newId);
     }
     else
     {

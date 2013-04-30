@@ -1,59 +1,45 @@
 /**
- * editor_plugin_src.js
- *
- * Copyright 2009, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://tinymce.moxiecode.com/license
- * Contributing: http://tinymce.moxiecode.com/contributing
- */
+* editor_plugin_src.js
+*
+* Copyright 2009, Moxiecode Systems AB
+* Released under LGPL License.
+*
+* License: http://tinymce.moxiecode.com/license
+* Contributing: http://tinymce.moxiecode.com/contributing
+*/
 (function() {
     // Load plugin specific language pack
     tinymce.PluginManager.requireLangPack('subordinate');
 
     tinymce.create('tinymce.plugins.SubordinatePlugin', {
         /**
-         * Initializes the plugin, this will be executed after the plugin has been created.
-         * This call is done before the editor instance has finished it's initialization so use the onInit event
-         * of the editor instance to intercept that event.
-         *
-         * @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
-         * @param {string} url Absolute URL to where the plugin is located.
-         */
+* Initializes the plugin, this will be executed after the plugin has been created.
+* This call is done before the editor instance has finished it's initialization so use the onInit event
+* of the editor instance to intercept that event.
+*
+* @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
+* @param {string} url Absolute URL to where the plugin is located.
+*/
         init : function(ed, url) {
             // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceSubordinate');
                        
-            ed.addCommand('mceSubordinate', function() { 
+            ed.addCommand('mceSubordinate', function() {
                 var idNumber;
-                var indexNumber = '';  
+                var indexNumber;
                 var lasttype;
                 var subFlag = ''; // to determine if the subordinate plugin was activated by another subordinate plugin editor
-                var flag = false;
                 
-                console.log("editor ID: "+ed.editorId);
+                var type = ed.editorId.split("_");
                 
-                var type = ed.editorId.split("_");  
-                var aElementNode = ed.selection.getNode().id;
+                idNumber= ed.editorId.split("-");
                 
-                console.log("anchored Element id: "+aElementNode);
-                
-                if((aElementNode == '') || (aElementNode === 'undefined'))
-                {
-                    idNumber= ed.editorId.split("-");   
-                }
-                else
-                {
-                    flag = true;
-                    idNumber = aElementNode.split("-");
-                }
-                 
                 if(type[1] == "theorem")
                 {
                     if(type[2] == "content")
                     {
                         indexNumber = "statementtheoremcontent"
                     }
-                    else if(type[2] ==  "part")
+                    else if(type[2] == "part")
                     {
                         indexNumber = "parttheoremcontent"
                     }
@@ -68,84 +54,78 @@
                     for(var i=1; i < idNumber.length-1; i++)
                     {
                         tempString += idNumber[i] + "-";
-                    }                
+                    }
                     
                     tempString += idNumber[idNumber.length-1];
                     
                     subFlag = tempString;
                     
                     lasttype = type[2].split("-");
-                    
-                    if(!flag)
-                    {
-                        indexNumber = type[1]+lasttype[0];
-                    }
-                }                    
+
+                    indexNumber = type[1]+lasttype[0];
+                }
                     
                 else
                 {
                     lasttype = type[2].split("-");
 
-                    if(!flag)
-                    {
-                        indexNumber = type[1]+lasttype[0];
-                    }
-                }               
+                    indexNumber = type[1]+lasttype[0];
+                }
                                 
                 for(var i=1; i < idNumber.length-1; i++)
                 {
                     indexNumber += idNumber[i] + "-";
-                }                
+                }
                     
-                indexNumber += idNumber[idNumber.length-1];   
+                indexNumber += idNumber[idNumber.length-1];
                                 
-                makeSubordinateDialog(ed, indexNumber, subFlag);                
+                makeSubordinateDialog(ed, indexNumber, subFlag);
                
-            });  
+            });
 
             // Add a node change handler, when no content is selected, the button is disabled,
             // otherwise, the button is enabled.
             ed.onNodeChange.add(function(ed, cm, n) {
                 if(ed.selection.getContent())
                 {
-                    cm.setDisabled('subordinate', false);  
+                    cm.setDisabled('subordinate', false);
                 }
                 else
-                {                 
-                    cm.setActive('subordinate', false); 
-                    cm.setDisabled('subordinate', true);  
+                {
+                    cm.setActive('subordinate', false);
+                    cm.setDisabled('subordinate', true);
                 }
             });
             
             // Register subordinate button
             ed.addButton('subordinate', {
                 title : 'subordinate.desc',
-                cmd : 'mceSubordinate', 
-                image : url + '/img/subordinate.png'                
+                cmd : 'mceSubordinate',
+                image : url + '/img/subordinate.png'
             });
             
         },
 
         /**
-         * Creates control instances based in the incomming name. This method is normally not
-         * needed since the addButton method of the tinymce.Editor class is a more easy way of adding buttons
-         * but you sometimes need to create more complex controls like listboxes, split buttons etc then this
-         * method can be used to create those.
-         *
-         * @param {String} n Name of the control to create.
-         * @param {tinymce.ControlManager} cm Control manager to use inorder to create new control.
-         * @return {tinymce.ui.Control} New control instance or null if no control was created.
-         */
+* Creates control instances based in the incomming name. This method is normally not
+* needed since the addButton method of the tinymce.Editor class is a more easy way of adding buttons
+* but you sometimes need to create more complex controls like listboxes, split buttons etc then this
+* method can be used to create those.
+*
+* @param {String} n Name of the control to create.
+* @param {tinymce.ControlManager} cm Control manager to use inorder to create new control.
+* @return {tinymce.ui.Control} New control instance or null if no control was created.
+*/
         createControl : function(n, cm) {
             return null;
         },
 
         /**
-         * Returns information about the plugin as a name/value array.
-         * The current keys are longname, author, authorurl, infourl and version.
-         *
-         * @return {Object} Name/value array containing information about the plugin.
-         */
+* Returns information about the plugin as a name/value array.
+* The current keys are longname, author, authorurl, infourl and version.
+*
+* @return {Object} Name/value array containing information about the plugin.
+*/
         getInfo : function() {
             return {
                 longname : 'Subordinate plugin',
@@ -162,9 +142,7 @@
 })();
 
 function makeSubordinateDialog(ed, idNumber, isSub)
-{    
-    console.log("idNumber: "+idNumber);
-    console.log("isSub: "+isSub);
+{
     var container = null;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
@@ -177,7 +155,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     var selectTypeText = document.createTextNode('Subordinate Type : ');
     var selectTypeMenu = document.createElement('select');
     
-    var selectTypeOption1 = document.createElement('option');  
+    var selectTypeOption1 = document.createElement('option');
     selectTypeOption1.value = "Information";
     var selectTypeOption1Value = document.createTextNode('Information');
     var selectTypeOption2 = document.createElement('option');
@@ -199,7 +177,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     else
     {
         selectedNode = ed.selection.getNode().tagName;
-    } 
+    }
     
     selectTypeOption1.setAttribute("selected", "selected");
     
@@ -211,23 +189,24 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     var dialogContentForm = document.createElement('div');
     var dialogButtonContainer = document.createElement('div');
     var saveButton = document.createElement('input');
-    var cancelButton = document.createElement('input');  
+    var cancelButton = document.createElement('input');
     
     if(isSub != '')
-    {       
+    {
         if(selectedNode != 'A')
         {
-            console.log("not A?");
-            console.log("sectedNode then?: "+selectedNode);
-            container = document.createElement("div");   
-            idNumber = isExistingIndex(idNumber+"-1"); 
+            container = document.createElement("div");
+            idNumber = isExistingIndex(idNumber+"-1");
+            
+            console.log("non anchored element idNumber:" +idNumber);
             
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
+            
+            console.log("idNumber generated: "+idNumber);
              
-            var parentDiv = findParentDiv(isSub);        
+            var parentDiv = findParentDiv(isSub);
             $(parentDiv).append(container);
-
         }
         else
         {
@@ -241,7 +220,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
                 wordId = ed.selection.getNode().id;
             }
             var wordIdInfo = wordId.split("-");
-            
+                        
             var tempIdNumber = '';
             
             for(var i = 1; i < wordIdInfo.length-2; i++)
@@ -252,17 +231,27 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             
             idNumber = tempIdNumber;
             
-            console.log("a element idNumber: "+idNumber);
+            console.log("anchored element idNumber read: "+idNumber);
+            
             $(document).find(".msm_subordinate_containers").each(function() {
-                console.log("subordinate containers: "+this.id);
+                console.log("container: "+this.id);
             });
             
-            container = document.getElementById('msm_subordinate_container-'+idNumber); 
-        }      
+            console.log("result container should not be the same as container id!!");
+
+            $(document).find(".msm_subordinate_results").each(function() {
+//                console.log("within this result container: "+this.id);
+//                $(this).find(".msm_subordinate_results").each(function() {
+                    console.log("result container: "+this.id);
+//                });
+            });
+            
+            container = document.getElementById('msm_subordinate_container-'+idNumber);
+        }
     }
     else
     {
-        container = document.getElementById('msm_subordinate_container-'+idNumber);      
+        container = document.getElementById('msm_subordinate_container-'+idNumber);
     }
         
     dialogwhole.id = 'msm_subordinate-'+idNumber;
@@ -309,7 +298,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
         closeSubFormDialog(idNumber);
     };
     
-    var infoForm = makeInfoForm(ed, idNumber);    
+    var infoForm = makeInfoForm(ed, idNumber);
     dialogContentForm.appendChild(infoForm);
     
     selectTypeMenu.appendChild(selectTypeOption1);
@@ -333,30 +322,23 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     dialogForm.appendChild(document.createElement('br'));
     dialogForm.appendChild(dialogButtonContainer);
         
-    dialogwhole.appendChild(dialogForm);   
+    dialogwhole.appendChild(dialogForm);
       
     // only append the new dialog form to div when it hasn't already been done
     if(!container.hasChildNodes())
     {
-        container.appendChild(dialogwhole);
+        container.appendChild(dialogwhole);    
     }
     else
     {
-        var idInfo = idNumber.split("-");
-        var editorInfo = ed.editorId.split("-");
-        
-        var containerId = idInfo[0].substr(0,idInfo[0].length-1)+editorInfo[1];
-        
-        console.log("containerId: "+containerId);
-        
-        $('#msm_subordinate_container-'+containerId+" textarea").each(function() {
+        $('#msm_subordinate_container-'+idNumber+" textarea").each(function() {
             if(tinymce.getInstanceById($(this).attr("id")) != null)
             {
-                tinymce.execCommand('mceFocus', false, $(this).attr("id"));  
+                tinymce.execCommand('mceFocus', false, $(this).attr("id"));
                 tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
             }
         });
-        $('#msm_subordinate_container-'+containerId).empty();
+        $('#msm_subordinate_container-'+idNumber).empty();
         container.appendChild(dialogwhole);
     }
     
@@ -364,7 +346,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     {
         changeSelectIndex(ed, idNumber);
         loadPreviousData(ed, idNumber);
-    }  
+    }
     
     createDialog(ed, idNumber);
     
