@@ -195,17 +195,22 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     {
         if(selectedNode != 'A')
         {
+            console.log("non anchored element");
+            console.log("checking for duplicate id: "+idNumber);
+            
             container = document.createElement("div");
             idNumber = isExistingIndex(idNumber+"-1");
-            
-            console.log("non anchored element idNumber:" +idNumber);
             
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
             
-            console.log("idNumber generated: "+idNumber);
+//            console.log("isSub: " + isSub);
              
             var parentDiv = findParentDiv(isSub);
+            
+//            console.log("parentDiv:");
+//            console.log(parentDiv);
+            
             $(parentDiv).append(container);
         }
         else
@@ -230,21 +235,6 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             tempIdNumber += wordIdInfo[wordIdInfo.length-2];
             
             idNumber = tempIdNumber;
-            
-            console.log("anchored element idNumber read: "+idNumber);
-            
-            $(document).find(".msm_subordinate_containers").each(function() {
-                console.log("container: "+this.id);
-            });
-            
-            console.log("result container should not be the same as container id!!");
-
-            $(document).find(".msm_subordinate_results").each(function() {
-//                console.log("within this result container: "+this.id);
-//                $(this).find(".msm_subordinate_results").each(function() {
-                    console.log("result container: "+this.id);
-//                });
-            });
             
             container = document.getElementById('msm_subordinate_container-'+idNumber);
         }

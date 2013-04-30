@@ -222,7 +222,6 @@ function makeInfoForm(ed, id)
 
 function loadPreviousData(editor, id)
 {
-    console.log("loadPreviousData");
     var selectedAnchorIdInfo = null;
     
     var indexId = '';
@@ -253,12 +252,6 @@ function loadPreviousData(editor, id)
         indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
     }
     
-//    for(var i=1; i < selectedAnchorIdInfo.length-1; i++)
-//    {
-//        indexId += selectedAnchorIdInfo[i] + "-";
-//    }
-//    indexId += selectedAnchorIdInfo[selectedAnchorIdInfo.length-1];
-        
     var prevSelectValue = null;
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
@@ -401,6 +394,7 @@ function submitSubForm(ed, id, subId)
     else
     {
         var textIdInfo = ed.selection.getNode().id.split("-");
+        
         var textId = '';
         for(var i=1; i < textIdInfo.length-1; i++)
         {
@@ -453,11 +447,14 @@ function submitSubForm(ed, id, subId)
             }
             else
             {
+                console.log("hotword text");
+                console.log($.trim(selectedText));
                 newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";
             }
            
             ed.selection.setContent(newContent);
         }
+        
         closeSubFormDialog(id);
     }
    
@@ -465,10 +462,22 @@ function submitSubForm(ed, id, subId)
 
 function replaceSubordinateDiv(index, hotId, subId)
 {
+    var subparent = null;
+    
+    // top subordinate with nested subordinates do not have subId defined
+    // but can use its id to get the parent(def/theorem...etc) Div id
+    if(subId == '')
+    {
+        subparent = findParentDiv(index);
+    }
+    else
+    {
+        subparent = findParentDiv(subId);
+    }
+   
     // need grab the parent to get the id of the result container
     // (this generic code allows the plugin to have nested subordinates)
-    var subparent = findParentDiv(subId);
-    $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
+     $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
         if(this.id == "msm_subordinate_result-"+hotId)
         {
             $(this).empty().remove();
@@ -476,7 +485,7 @@ function replaceSubordinateDiv(index, hotId, subId)
     });
    
     var subordinateResultContainer = createSubordinateDiv(index, hotId, "replace");
-   
+    
     return subordinateResultContainer;
 }
 
@@ -697,6 +706,9 @@ function createDialog(ed, idNumber)
 
 function findParentDiv(idEnding)
 {
+//    console.log("findParentDiv method");
+//    console.log("idEnding: "+idEnding);
+    
     var parent = null;
     var matchInfo = null;
     var typeId = null;
@@ -716,11 +728,20 @@ function findParentDiv(idEnding)
     var bodymatch = idEnding.match(bodyPattern);
     var intromatch = idEnding.match(introPattern);
     
+//    $(document).find(".copied_msm_structural_element").each(function() {
+//        console.log("which parent exists?: "+this.id);
+//    });
+    
     if(defmatch)
     {
         matchInfo = defmatch[0].split("-");
         
+//        console.log("def matchInfo:");
+//        console.log(matchInfo);
+//        
         typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+        
+//        console.log("def typeId: "+typeId);
         
         parent = document.getElementById("copied_msm_def-"+typeId);
     }
@@ -740,8 +761,9 @@ function isExistingIndex(oldid)
 {
     var newId = '';
     var existingDiv = document.getElementById("msm_subordinate_container-"+oldid);
+    var existinghotword = document.getElementById("msm_subordinate_hotword-"+oldid);
    
-    if(existingDiv)
+    if((existingDiv)||(existinghotword))
     {
         var oldidInfo = oldid.split("-");
         
@@ -752,8 +774,9 @@ function isExistingIndex(oldid)
         newId = isExistingIndex(newId);
     }
     else
-    {
+    {       
         newId = oldid;
     }
+    
     return newId;
 }
