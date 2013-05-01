@@ -372,7 +372,9 @@ function closeSubFormDialog(id)
 **/
 function submitSubForm(ed, id, subId)
 {
-    var selectedText = ed.selection.getContent({format: 'text'});
+    var selectedText = ed.selection.getContent({
+        format: 'text'
+    });
             
     var selectedNode = null;
         
@@ -475,7 +477,7 @@ function replaceSubordinateDiv(index, hotId, subId)
    
     // need grab the parent to get the id of the result container
     // (this generic code allows the plugin to have nested subordinates)
-     $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
+    $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
         if(this.id == "msm_subordinate_result-"+hotId)
         {
             $(this).empty().remove();
@@ -704,8 +706,7 @@ function createDialog(ed, idNumber)
 
 function findParentDiv(idEnding)
 {
-//    console.log("findParentDiv method");
-//    console.log("idEnding: "+idEnding);
+    console.log("idEnding: "+idEnding);
     
     var parent = null;
     var matchInfo = null;
@@ -717,6 +718,7 @@ function findParentDiv(idEnding)
     var commentPattern = /^\S*(commentcontent\d+\S*)$/;
     var bodyPattern = /^\S*(bodycontent\d+\S*)$/;
     var introPattern = /^\S*(introcontent\d+\S*)$/;
+    var introChildPattern = /^\S*(introchild\d+\S*)$/;
     
     
     var defmatch = idEnding.match(defPattern);
@@ -725,21 +727,16 @@ function findParentDiv(idEnding)
     var commentmatch = idEnding.match(commentPattern);
     var bodymatch = idEnding.match(bodyPattern);
     var intromatch = idEnding.match(introPattern);
-    
-//    $(document).find(".copied_msm_structural_element").each(function() {
-//        console.log("which parent exists?: "+this.id);
-//    });
+    var introchildmatch = idEnding.match(introChildPattern);
     
     if(defmatch)
     {
+        console.log("defcontent match");
         matchInfo = defmatch[0].split("-");
-        
-//        console.log("def matchInfo:");
-//        console.log(matchInfo);
-//        
+        //        
         typeId = matchInfo[0].charAt(matchInfo[0].length-1);
         
-//        console.log("def typeId: "+typeId);
+        console.log("typeId: "+typeId);
         
         parent = document.getElementById("copied_msm_def-"+typeId);
     }
@@ -751,6 +748,33 @@ function findParentDiv(idEnding)
        
         parent = document.getElementById("copied_msm_comment-"+typeId);
     }
+    else if(bodymatch)
+    {
+        matchInfo = bodymatch[0].split("-");
+            
+        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+        
+        parent = document.getElementById("copied_msm_body-"+typeId);
+    }
+    else if(intromatch)
+    {
+        matchInfo = intromatch[0].split("-");
+        
+        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+        
+        parent = document.getElementById("copied_msm_intro-"+typeId);
+    }
+    else if(introchildmatch)
+    {
+        matchInfo = intromatch[0].split("-");
+        
+        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
+        
+        parent = document.getElementById("msm_intro_child_div-"+typeId);
+    }
+    
+    console.log("parent: ");
+    console.log(parent);
     
     return parent;
 }
