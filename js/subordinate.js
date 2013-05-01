@@ -372,7 +372,7 @@ function closeSubFormDialog(id)
 **/
 function submitSubForm(ed, id, subId)
 {
-    var selectedText = ed.selection.getContent();
+    var selectedText = ed.selection.getContent({format: 'text'});
             
     var selectedNode = null;
         
@@ -447,8 +447,6 @@ function submitSubForm(ed, id, subId)
             }
             else
             {
-                console.log("hotword text");
-                console.log($.trim(selectedText));
                 newContent = "<a href='#' class='msm_subordinate_hotwords' id='msm_subordinate_hotword-"+subIndex+"'>"+$.trim(selectedText)+"</a> ";
             }
            

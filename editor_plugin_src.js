@@ -169,7 +169,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     var selectTypeOption4Value = document.createTextNode('External Reference');
     
     var selectedNode = null;
-        
+    
     if($.browser.msie)
     {
         selectedNode = ed.selection.getNode().childNodes[0].tagName;
@@ -195,22 +195,13 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     {
         if(selectedNode != 'A')
         {
-            console.log("non anchored element");
-            console.log("checking for duplicate id: "+idNumber);
-            
             container = document.createElement("div");
             idNumber = isExistingIndex(idNumber+"-1");
             
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
-            
-//            console.log("isSub: " + isSub);
              
             var parentDiv = findParentDiv(isSub);
-            
-//            console.log("parentDiv:");
-//            console.log(parentDiv);
-            
             $(parentDiv).append(container);
         }
         else
