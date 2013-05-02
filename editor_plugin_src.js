@@ -143,6 +143,7 @@
 
 function makeSubordinateDialog(ed, idNumber, isSub)
 {
+    console.log("initial idNumber: "+idNumber);
     var container = null;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
@@ -206,7 +207,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
         }
         else
         {
-            var wordId = '';
+            var wordId = '';            
             if($.browser.msie)
             {
                 wordId = ed.selection.getNode().childNodes[0].id;
@@ -215,17 +216,21 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             {
                 wordId = ed.selection.getNode().id;
             }
-            var wordIdInfo = wordId.split("-");
-                        
-            var tempIdNumber = '';
             
+            var pattern = /([A-Za-z]*?)(\d+)((?:-\d+)*)/;
+            
+            var editorIdInfo = ed.editorId.split("-");            
+            var idReplacement = editorIdInfo[1].replace(pattern, "$2");           
+            
+            var wordIdInfo = wordId.split("-");           
+            var oldString = '';
             for(var i = 1; i < wordIdInfo.length-2; i++)
             {
-                tempIdNumber += wordIdInfo[i]+"-";
-            }
-            tempIdNumber += wordIdInfo[wordIdInfo.length-2];
+                oldString += wordIdInfo[i]+"-";
+            }  
+            oldString += wordIdInfo[wordIdInfo.length-2];
             
-            idNumber = tempIdNumber;
+            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");
             
             container = document.getElementById('msm_subordinate_container-'+idNumber);
         }
@@ -234,7 +239,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     {
         container = document.getElementById('msm_subordinate_container-'+idNumber);
     }
-        
+            
     dialogwhole.id = 'msm_subordinate-'+idNumber;
     container.setAttribute("title", "Create Subordinate");
         

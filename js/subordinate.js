@@ -497,6 +497,8 @@ function createSubordinateDiv(index, oldidString, flag)
     // no need to check for duplicate id if replacing already existing one...
     if(flag == '')
     {
+        console.log("oldidString: "+oldidString);
+        
         var oldidStringInfo = oldidString.split("-");
     
         idString = checkForExistence(oldidString) + "-" + oldidStringInfo[oldidStringInfo.length-1];
@@ -706,7 +708,7 @@ function createDialog(ed, idNumber)
 
 function findParentDiv(idEnding)
 {
-    console.log("idEnding: "+idEnding);
+//    console.log("idEnding: "+idEnding);
     
     var parent = null;
     var matchInfo = null;
@@ -731,12 +733,12 @@ function findParentDiv(idEnding)
     
     if(defmatch)
     {
-        console.log("defcontent match");
+//        console.log("defcontent match");
         matchInfo = defmatch[0].split("-");
         //        
         typeId = matchInfo[0].charAt(matchInfo[0].length-1);
         
-        console.log("typeId: "+typeId);
+//        console.log("typeId: "+typeId);
         
         parent = document.getElementById("copied_msm_def-"+typeId);
     }
@@ -773,8 +775,8 @@ function findParentDiv(idEnding)
         parent = document.getElementById("msm_intro_child_div-"+typeId);
     }
     
-    console.log("parent: ");
-    console.log(parent);
+//    console.log("parent: ");
+//    console.log(parent);
     
     return parent;
 }
