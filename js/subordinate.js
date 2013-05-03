@@ -731,41 +731,31 @@ function findParentDiv(idEnding)
     if(defmatch)
     {
         matchInfo = defmatch[0].split("-");
-        
-        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
-        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("copied_msm_def-"+typeId);
     }
     else if(commentmatch)
     {
-        matchInfo = commentmatch[0].split("-");
-        
-        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
-       
+        matchInfo = commentmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
         parent = document.getElementById("copied_msm_comment-"+typeId);
     }
     else if(bodymatch)
     {
-        matchInfo = bodymatch[0].split("-");
-            
-        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
-        
+        matchInfo = bodymatch[0].split("-");            
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("copied_msm_body-"+typeId);
     }
     else if(intromatch)
     {
-        matchInfo = intromatch[0].split("-");
-        
-        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
-        
+        matchInfo = intromatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("copied_msm_intro-"+typeId);
     }
     else if(introchildmatch)
     {
-        matchInfo = intromatch[0].split("-");
-        
-        typeId = matchInfo[0].charAt(matchInfo[0].length-1);
-        
+        matchInfo = intromatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("msm_intro_child_div-"+typeId);
     }
     
