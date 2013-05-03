@@ -753,8 +753,8 @@ function findParentDiv(idEnding)
         parent = document.getElementById("copied_msm_intro-"+typeId);
     }
     else if(introchildmatch)
-    {
-        matchInfo = intromatch[0].split("-");        
+    {        
+        matchInfo = introchildmatch[0].split("-");        
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("msm_intro_child_div-"+typeId);
     }
