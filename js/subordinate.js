@@ -718,7 +718,7 @@ function findParentDiv(idEnding)
     var bodyPattern = /^\S*(bodycontent\d+\S*)$/;
     var introPattern = /^\S*(introcontent\d+\S*)$/;
     var introChildPattern = /^\S*(introchild\d+\S*)$/;
-    
+    var extraInfoPattern = /^\S*(extracontent\d+\S*)$/;
     
     var defmatch = idEnding.match(defPattern);
     var statementmatch = idEnding.match(statementTheoremPattern);
@@ -727,6 +727,7 @@ function findParentDiv(idEnding)
     var bodymatch = idEnding.match(bodyPattern);
     var intromatch = idEnding.match(introPattern);
     var introchildmatch = idEnding.match(introChildPattern);
+    var extracontentmatch = idEnding.match(extraInfoPattern);
     
     if(defmatch)
     {
@@ -757,6 +758,12 @@ function findParentDiv(idEnding)
         matchInfo = introchildmatch[0].split("-");        
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("msm_intro_child_div-"+typeId);
+    }
+    else if(extracontentmatch)
+    {
+        matchInfo = extracontentmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        parent = document.getElementById("copied_msm_extra_info-"+typeId);
     }
     
     return parent;
