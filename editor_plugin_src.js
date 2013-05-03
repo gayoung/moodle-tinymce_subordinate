@@ -143,7 +143,6 @@
 
 function makeSubordinateDialog(ed, idNumber, isSub)
 {
-    console.log("initial idNumber: "+idNumber);
     var container = null;
     var dialogwhole = document.createElement('div');
     var dialogForm = document.createElement('form');
