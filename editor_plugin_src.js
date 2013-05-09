@@ -222,10 +222,10 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             
             // nested subordinates in statement theorem needs to match the statement theorem id not theorem id
             var statementTheoremmatch = /^\S*(statementtheoremcontent\d+\S*)$/;
+            var partTheoremmatch = /^\S*(parttheoremcontent+\S*)$/;
             var idReplacement = '';
             if(ed.editorId.match(statementTheoremmatch))
-            {
-                
+            {                
                 var subordinatematch = /^\S*(subordinateinfoContent)+(statementtheoremcontent\d+\S*)$/;
                 
                 if(ed.editorId.match(subordinatematch))
@@ -248,6 +248,30 @@ function makeSubordinateDialog(ed, idNumber, isSub)
                     idReplacement = tempStringInfo[1];
                 }
             }
+            else if(ed.editorId.match(partTheoremmatch))
+            {
+                var subordinatematch = /^\S*(subordinateinfoContent)+(parttheoremcontent+\S*)$/;
+                
+                if(ed.editorId.match(subordinatematch))
+                {
+                    idReplacement = editorIdInfo[1].replace(pattern, "$2");     
+                }
+                else
+                {  
+                    var tempString = '';
+                    for(var i = 1; i < editorIdInfo.length-1; i++)
+                    {
+                        tempString += editorIdInfo[i] + "-";
+                    }
+                    tempString += editorIdInfo[editorIdInfo.length-1];
+                    
+                    var tempidReplacement = tempString.replace(pattern, "$3");       
+                    
+                    var tempStringInfo = tempidReplacement.split("-");                  
+                    
+                    idReplacement = tempStringInfo[2];
+                }
+            }
             else
             {
                 idReplacement = editorIdInfo[1].replace(pattern, "$2");    
@@ -261,7 +285,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }  
             oldString += wordIdInfo[wordIdInfo.length-2];
             
-            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");   
+            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3"); 
             
             container = document.getElementById('msm_subordinate_container-'+idNumber);
         }

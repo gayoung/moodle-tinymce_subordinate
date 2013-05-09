@@ -474,6 +474,8 @@ function replaceSubordinateDiv(index, hotId, subId)
     else
     {        
         subparent = findParentDiv(subId);
+        console.log("subparent: ");
+        console.log(subparent);
     }
    
     // need grab the parent to get the id of the result container
@@ -797,8 +799,34 @@ function findParentDiv(idEnding)
     }
     else if(partmatch)
     {
-        matchInfo = partmatch[0].split("-");
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
+        matchInfo = partmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");     
+        
+        $(".copied_msm_structural_element").each(function() {
+            var currentIdInfo = this.id.split("-");
+            $(this).find(".msm_subordinate_result_containers").each(function() {
+                var resultIdInfo = this.id.split("-");
+                
+                var resultIdEnding = resultIdInfo[1].replace(/(statementtheoremcontent)(\d+)/, "$2");
+                
+                if(typeId == resultIdInfo[2])
+                {    
+                    if(currentIdInfo[1] == resultIdEnding)
+                    {                            
+                        typeId = resultIdEnding;
+                    }
+                }
+            });
+        });    
+        
+        $(".msm_theorem_statement_containers").each(function() {
+           console.log("exsiting statement container: "+this.id); 
+        });
+       
+        typeId += "-"+matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
+        
+        console.log("typeID: "+typeId);
+        
         parent = document.getElementById("msm_theorem_statement_container-"+typeId);
     }
     
