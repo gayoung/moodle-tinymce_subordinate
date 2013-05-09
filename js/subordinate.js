@@ -472,7 +472,7 @@ function replaceSubordinateDiv(index, hotId, subId)
         subparent = findParentDiv(index);
     }
     else
-    {
+    {        
         subparent = findParentDiv(subId);
     }
    
@@ -707,6 +707,8 @@ function createDialog(ed, idNumber)
 
 function findParentDiv(idEnding)
 {
+    console.log("findParentDiv idEnding: "+idEnding);
+    
     var parent = null;
     var matchInfo = null;
     var typeId = null;
@@ -728,6 +730,10 @@ function findParentDiv(idEnding)
     var intromatch = idEnding.match(introPattern);
     var introchildmatch = idEnding.match(introChildPattern);
     var extracontentmatch = idEnding.match(extraInfoPattern);
+    
+    // parent needs to be whatever div contains the object in 
+    // msm_subordinate_result_containers class (usually the 
+    // copied_msm_structural_elements class)
     
     if(defmatch)
     {
@@ -764,6 +770,36 @@ function findParentDiv(idEnding)
         matchInfo = extracontentmatch[0].split("-");        
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("copied_msm_extra_info-"+typeId);
+    }
+    else if(statementmatch)
+    {
+        matchInfo = statementmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");     
+        
+        $(".copied_msm_structural_element").each(function() {
+            var currentIdInfo = this.id.split("-");
+            $(this).find(".msm_subordinate_result_containers").each(function() {
+                var resultIdInfo = this.id.split("-");
+                
+                var resultIdEnding = resultIdInfo[1].replace(/(statementtheoremcontent)(\d+)/, "$2");
+                
+                if(typeId == resultIdInfo[2])
+                {    
+                    if(currentIdInfo[1] == resultIdEnding)
+                    {                            
+                        typeId = resultIdEnding;
+                    }
+                }
+            });
+        });        
+        
+        parent = document.getElementById("copied_msm_theorem-"+typeId);
+    }
+    else if(partmatch)
+    {
+        matchInfo = partmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
+        parent = document.getElementById("msm_theorem_statement_container-"+typeId);
     }
     
     return parent;
