@@ -200,15 +200,10 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             container = document.createElement("div");
             idNumber = isExistingIndex(idNumber+"-1");
             
-            console.log("idNumber: "+idNumber);
-            
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
              
             var parentDiv = findParentDiv(isSub);
-            
-            console.log("non anchored element parent:");
-            console.log(parentDiv);
             
             $(parentDiv).append(container);
         }
@@ -230,7 +225,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             
             // nested subordinates in statement theorem needs to match the statement theorem id not theorem id
             var statementTheoremmatch = /^\S*(statementtheoremcontent\d+\S*)$/;
-            var partTheoremmatch = /^\S*(parttheoremcontent+\S*)$/;
+            var partTheoremmatch = /^\S*(parttheoremcontent\d+\S*)$/;
             var idReplacement = '';
             if(ed.editorId.match(statementTheoremmatch))
             {                
@@ -270,21 +265,26 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }
             else
             {
-                idReplacement = editorIdInfo[1].replace(pattern, "$2");    
+                idReplacement = editorIdInfo[1].replace(pattern, "$2");                   
             }  
             
             
-                var wordIdInfo = wordId.split("-");           
-                var oldString = '';
-                for(var i = 1; i < wordIdInfo.length-2; i++)
-                {
-                    oldString += wordIdInfo[i]+"-";
-                }  
-                oldString += wordIdInfo[wordIdInfo.length-2];
+            var wordIdInfo = wordId.split("-");           
+            var oldString = '';
+            for(var i = 1; i < wordIdInfo.length-2; i++)
+            {
+                oldString += wordIdInfo[i]+"-";
+            }  
+            oldString += wordIdInfo[wordIdInfo.length-2];
             
-                idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3"); 
+            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");              
+            console.log("idNumber: "+idNumber);
             
-                container = document.getElementById('msm_subordinate_container-'+idNumber);
+            $(document).find(".msm_subordinate_containers").each(function() {
+                console.log("existing containers: "+this.id); 
+            });
+            
+            container = document.getElementById('msm_subordinate_container-'+idNumber);
             
             
         }

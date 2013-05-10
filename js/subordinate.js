@@ -470,14 +470,10 @@ function replaceSubordinateDiv(index, hotId, subId)
     if(subId == '')
     {
         subparent = findParentDiv(index);
-        console.log("not a subordinate: ");
-        console.log(subparent);
     }
     else
     {        
         subparent = findParentDiv(subId);
-        console.log("subparent: ");
-        console.log(subparent);
     }
    
     // need grab the parent to get the id of the result container
@@ -725,6 +721,7 @@ function findParentDiv(idEnding)
     var introPattern = /^\S*(introcontent\d+\S*)$/;
     var introChildPattern = /^\S*(introchild\d+\S*)$/;
     var extraInfoPattern = /^\S*(extracontent\d+\S*)$/;
+    var associatePattern = /^\S*(infocontent\d+\S*)$/;
     
     var defmatch = idEnding.match(defPattern);
     var statementmatch = idEnding.match(statementTheoremPattern);
@@ -734,6 +731,7 @@ function findParentDiv(idEnding)
     var intromatch = idEnding.match(introPattern);
     var introchildmatch = idEnding.match(introChildPattern);
     var extracontentmatch = idEnding.match(extraInfoPattern);
+    var associatematch = idEnding.match(associatePattern);
     
     // parent needs to be whatever div contains the object in 
     // msm_subordinate_result_containers class (usually the 
@@ -774,6 +772,21 @@ function findParentDiv(idEnding)
         matchInfo = extracontentmatch[0].split("-");        
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
         parent = document.getElementById("copied_msm_extra_info-"+typeId);
+    }
+    else if(associatematch)
+    {
+        matchInfo = associatematch[0].split("-");    
+        console.log(matchInfo);
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
+        typeId += "-"+matchInfo[1];
+        
+        $(document).find(".msm_associate_childs").each(function() {
+           console.log("existing associates: "+this.id); 
+        });
+        
+        console.log("typeId: "+typeId);
+        
+        parent = document.getElementById("msm_associate_childs-"+typeId);
     }
     else if(statementmatch)
     {
