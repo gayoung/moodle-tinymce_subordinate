@@ -470,6 +470,8 @@ function replaceSubordinateDiv(index, hotId, subId)
     if(subId == '')
     {
         subparent = findParentDiv(index);
+        console.log("not a subordinate: ");
+        console.log(subparent);
     }
     else
     {        
@@ -818,7 +820,7 @@ function isExistingIndex(oldid)
     {
         var oldidInfo = oldid.split("-");
         
-        var idInt = parseInt(oldidInfo[1])+1;
+        var idInt = parseInt(oldidInfo[oldidInfo.length-1])+1;
            
         newId = oldidInfo[0]+"-"+idInt;
            

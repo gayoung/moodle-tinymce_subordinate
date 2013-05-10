@@ -200,10 +200,16 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             container = document.createElement("div");
             idNumber = isExistingIndex(idNumber+"-1");
             
+            console.log("idNumber: "+idNumber);
+            
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
              
             var parentDiv = findParentDiv(isSub);
+            
+            console.log("non anchored element parent:");
+            console.log(parentDiv);
+            
             $(parentDiv).append(container);
         }
         else
