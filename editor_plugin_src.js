@@ -60,6 +60,8 @@
                     
                     subFlag = tempString;
                     
+                    console.log("subFlag: "+subFlag);
+                    
                     lasttype = type[2].split("-");
 
                     indexNumber = type[1]+lasttype[0];
@@ -250,44 +252,35 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }
             else if(ed.editorId.match(partTheoremmatch))
             {
-                var subordinatematch = /^\S*(subordinateinfoContent)+(parttheoremcontent+\S*)$/;
-                
-                if(ed.editorId.match(subordinatematch))
+                var partpattern = /([A-Za-z]*?)(\d+-\d+-\d+)((?:-\d+)*)/;
+                var tempString = '';
+                for(var i = 1; i < editorIdInfo.length-1; i++)
                 {
-                    idReplacement = editorIdInfo[1].replace(pattern, "$2");     
+                    tempString += editorIdInfo[i] + "-";
                 }
-                else
-                {  
-                    var tempString = '';
-                    for(var i = 1; i < editorIdInfo.length-1; i++)
-                    {
-                        tempString += editorIdInfo[i] + "-";
-                    }
-                    tempString += editorIdInfo[editorIdInfo.length-1];
+                tempString += editorIdInfo[editorIdInfo.length-1];
                     
-                    var tempidReplacement = tempString.replace(pattern, "$3");       
-                    
-                    var tempStringInfo = tempidReplacement.split("-");                  
-                    
-                    idReplacement = tempStringInfo[2];
-                }
+                idReplacement = tempString.replace(partpattern, "$2"); 
             }
             else
             {
                 idReplacement = editorIdInfo[1].replace(pattern, "$2");    
             }  
             
-            var wordIdInfo = wordId.split("-");           
-            var oldString = '';
-            for(var i = 1; i < wordIdInfo.length-2; i++)
-            {
-                oldString += wordIdInfo[i]+"-";
-            }  
-            oldString += wordIdInfo[wordIdInfo.length-2];
             
-            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3"); 
+                var wordIdInfo = wordId.split("-");           
+                var oldString = '';
+                for(var i = 1; i < wordIdInfo.length-2; i++)
+                {
+                    oldString += wordIdInfo[i]+"-";
+                }  
+                oldString += wordIdInfo[wordIdInfo.length-2];
             
-            container = document.getElementById('msm_subordinate_container-'+idNumber);
+                idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3"); 
+            
+                container = document.getElementById('msm_subordinate_container-'+idNumber);
+            
+            
         }
     }
     else
