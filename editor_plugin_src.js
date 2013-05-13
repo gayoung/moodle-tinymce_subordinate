@@ -1,25 +1,25 @@
 /**
-* editor_plugin_src.js
-*
-* Copyright 2009, Moxiecode Systems AB
-* Released under LGPL License.
-*
-* License: http://tinymce.moxiecode.com/license
-* Contributing: http://tinymce.moxiecode.com/contributing
-*/
+ * editor_plugin_src.js
+ *
+ * Copyright 2009, Moxiecode Systems AB
+ * Released under LGPL License.
+ *
+ * License: http://tinymce.moxiecode.com/license
+ * Contributing: http://tinymce.moxiecode.com/contributing
+ */
 (function() {
     // Load plugin specific language pack
     tinymce.PluginManager.requireLangPack('subordinate');
 
     tinymce.create('tinymce.plugins.SubordinatePlugin', {
         /**
-* Initializes the plugin, this will be executed after the plugin has been created.
-* This call is done before the editor instance has finished it's initialization so use the onInit event
-* of the editor instance to intercept that event.
-*
-* @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
-* @param {string} url Absolute URL to where the plugin is located.
-*/
+         * Initializes the plugin, this will be executed after the plugin has been created.
+         * This call is done before the editor instance has finished it's initialization so use the onInit event
+         * of the editor instance to intercept that event.
+         *
+         * @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
+         * @param {string} url Absolute URL to where the plugin is located.
+         */
         init : function(ed, url) {
             // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceSubordinate');
                        
@@ -107,25 +107,25 @@
         },
 
         /**
-* Creates control instances based in the incomming name. This method is normally not
-* needed since the addButton method of the tinymce.Editor class is a more easy way of adding buttons
-* but you sometimes need to create more complex controls like listboxes, split buttons etc then this
-* method can be used to create those.
-*
-* @param {String} n Name of the control to create.
-* @param {tinymce.ControlManager} cm Control manager to use inorder to create new control.
-* @return {tinymce.ui.Control} New control instance or null if no control was created.
-*/
+         * Creates control instances based in the incomming name. This method is normally not
+         * needed since the addButton method of the tinymce.Editor class is a more easy way of adding buttons
+         * but you sometimes need to create more complex controls like listboxes, split buttons etc then this
+         * method can be used to create those.
+         *
+         * @param {String} n Name of the control to create.
+         * @param {tinymce.ControlManager} cm Control manager to use inorder to create new control.
+         * @return {tinymce.ui.Control} New control instance or null if no control was created.
+         */
         createControl : function(n, cm) {
             return null;
         },
 
         /**
-* Returns information about the plugin as a name/value array.
-* The current keys are longname, author, authorurl, infourl and version.
-*
-* @return {Object} Name/value array containing information about the plugin.
-*/
+         * Returns information about the plugin as a name/value array.
+         * The current keys are longname, author, authorurl, infourl and version.
+         *
+         * @return {Object} Name/value array containing information about the plugin.
+         */
         getInfo : function() {
             return {
                 longname : 'Subordinate plugin',
@@ -198,10 +198,14 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             container = document.createElement("div");
             idNumber = isExistingIndex(idNumber+"-1");
             
+            console.log("idNumber: "+idNumber);
+            
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
              
             var parentDiv = findParentDiv(isSub);
+            
+            console.log(parentDiv);
             
             $(parentDiv).append(container);
         }
@@ -223,7 +227,9 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             
             // nested subordinates in statement theorem needs to match the statement theorem id not theorem id
             var statementTheoremmatch = /^\S*(statementtheoremcontent\d+\S*)$/;
+            var statementTheoremRefmatch = /^\S*(theoremrefcontent\d+\S*)$/;
             var partTheoremmatch = /^\S*(parttheoremcontent\d+\S*)$/;
+            var partTheoremRefmatch = /^\S*(theoremrefpart\d+\S*)$/;
             var associatematch = /^\S*(infocontent\d+\S*)$/;
             var refmatch = /^\S*((defrefcontent|commentrefcontent)\d+\S*)/;
             var idReplacement = '';
@@ -275,7 +281,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
                     
                 idReplacement = tempString.replace(assopattern, "$2"); 
             }
-            else if(ed.editorId.match(refmatch))
+            else if((ed.editorId.match(refmatch)) || (ed.editorId.match(partTheoremRefmatch)))
             {
                 var refpattern = /([A-Za-z]*?)(\d+-\d+-\d+)((?:-\d+)*)/;
                 var tempString = '';
@@ -286,8 +292,18 @@ function makeSubordinateDialog(ed, idNumber, isSub)
                 tempString += editorIdInfo[editorIdInfo.length-1];
                     
                 idReplacement = tempString.replace(refpattern, "$2"); 
-                
-                console.log("refmatch? ");
+            }
+            else if(ed.editorId.match(statementTheoremRefmatch))
+            {
+                var theoremcontentrefpattern = /([A-Za-z]*?)(\d+-\d+-\d+-\d+)((?:-\d+)*)/;
+                var tempString = '';
+                for(var i = 1; i < editorIdInfo.length-1; i++)
+                {
+                    tempString += editorIdInfo[i] + "-";
+                }
+                tempString += editorIdInfo[editorIdInfo.length-1];
+                    
+                idReplacement = tempString.replace(theoremcontentrefpattern, "$2"); 
             }
             else
             {

@@ -716,8 +716,8 @@ function findParentDiv(idEnding)
     var defPattern = /^\S*(defcontent\d+\S*)$/;
     var defrefPattern = /^\S*(defrefcontent\d+\S*)$/;
     var statementTheoremPattern = /^\S*(statementtheoremcontent\d+\S*)$/;
-    var statementTheoremRefPattern = /^\S*(statementtheoremrefcontent\d+\S*)$/;
-    var partTheoremPattern = /^\S*(parttheoremcontent\d+\S*)$/;
+    var statementTheoremRefPattern = /^\S*(theoremrefcontent\d+\S*)$/;
+    var partTheoremPattern = /^\S*(theoremrefpart\d+\S*)$/;
     var partTheoremRefPattern = /^\S*(parttheoremrefcontent\d+\S*)$/;
     var commentPattern = /^\S*(commentcontent\d+\S*)$/;
     var commentrefPattern = /^\S*(commentrefcontent\d+\S*)$/;
@@ -805,7 +805,7 @@ function findParentDiv(idEnding)
         
         parent = document.getElementById("msm_associate_childs-"+typeId);
     }
-    else if(statementmatch)
+    else if (statementmatch)
     {
         matchInfo = statementmatch[0].split("-");        
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");     
@@ -829,12 +829,29 @@ function findParentDiv(idEnding)
         
         parent = document.getElementById("copied_msm_theorem-"+typeId);
     }
+    else if(statementrefmatch)
+    {
+        matchInfo = statementrefmatch[0].split("-"); 
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");    
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
+        parent = document.getElementById("copied_msm_theoremref-"+typeId);
+    }
     else if(partmatch)
     {
         matchInfo = partmatch[0].split("-");   
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
         typeId += "-"+matchInfo[1];
         parent = document.getElementById("msm_theorem_statement_container-"+typeId);
+    }
+    else if(partrefmatch)
+    {
+        matchInfo = partrefmatch[0].split("-");   
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
+        typeId += "-"+matchInfo[1];
+        
+        console.log("typeID: "+typeId);
+        
+        parent = document.getElementById("msm_theoremref_statement_container-"+typeId);
     }
     
     return parent;
@@ -859,7 +876,7 @@ function isExistingIndex(oldid)
     else
     {       
         newId = oldid;
-    }
+    }    
     
     return newId;
 }
