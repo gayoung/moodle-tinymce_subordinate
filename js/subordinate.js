@@ -707,16 +707,20 @@ function createDialog(ed, idNumber)
 
 function findParentDiv(idEnding)
 {
-//    console.log("findParentDiv idEnding: "+idEnding);
+    //    console.log("findParentDiv idEnding: "+idEnding);
     
     var parent = null;
     var matchInfo = null;
     var typeId = null;
     
     var defPattern = /^\S*(defcontent\d+\S*)$/;
+    var defrefPattern = /^\S*(defrefcontent\d+\S*)$/;
     var statementTheoremPattern = /^\S*(statementtheoremcontent\d+\S*)$/;
+    var statementTheoremRefPattern = /^\S*(statementtheoremrefcontent\d+\S*)$/;
     var partTheoremPattern = /^\S*(parttheoremcontent\d+\S*)$/;
+    var partTheoremRefPattern = /^\S*(parttheoremrefcontent\d+\S*)$/;
     var commentPattern = /^\S*(commentcontent\d+\S*)$/;
+    var commentrefPattern = /^\S*(commentrefcontent\d+\S*)$/;
     var bodyPattern = /^\S*(bodycontent\d+\S*)$/;
     var introPattern = /^\S*(introcontent\d+\S*)$/;
     var introChildPattern = /^\S*(introchild\d+\S*)$/;
@@ -724,9 +728,13 @@ function findParentDiv(idEnding)
     var associatePattern = /^\S*(infocontent\d+\S*)$/;
     
     var defmatch = idEnding.match(defPattern);
+    var defrefmatch = idEnding.match(defrefPattern);
     var statementmatch = idEnding.match(statementTheoremPattern);
+    var statementrefmatch = idEnding.match(statementTheoremRefPattern);
     var partmatch = idEnding.match(partTheoremPattern);
+    var partrefmatch = idEnding.match(partTheoremRefPattern);
     var commentmatch = idEnding.match(commentPattern);
+    var commentrefmatch = idEnding.match(commentrefPattern);
     var bodymatch = idEnding.match(bodyPattern);
     var intromatch = idEnding.match(introPattern);
     var introchildmatch = idEnding.match(introChildPattern);
@@ -743,11 +751,27 @@ function findParentDiv(idEnding)
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("copied_msm_def-"+typeId);
     }
+    if(defrefmatch)
+    {
+        matchInfo = defrefmatch[0].split("-");    
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");  
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
+        
+        parent = document.getElementById("copied_msm_defref-"+typeId);
+    }
     else if(commentmatch)
     {
         matchInfo = commentmatch[0].split("-");        
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
         parent = document.getElementById("copied_msm_comment-"+typeId);
+    }
+    else if(commentrefmatch)
+    {
+        matchInfo = commentrefmatch[0].split("-");    
+        typeId = matchInfo[0].replace(/([A-Za-z]*-?)(\d+)/, "$2");       
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
+        
+        parent = document.getElementById("copied_msm_commentref-"+typeId);
     }
     else if(bodymatch)
     {
