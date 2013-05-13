@@ -707,7 +707,7 @@ function createDialog(ed, idNumber)
 
 function findParentDiv(idEnding)
 {
-    console.log("findParentDiv idEnding: "+idEnding);
+//    console.log("findParentDiv idEnding: "+idEnding);
     
     var parent = null;
     var matchInfo = null;
@@ -776,15 +776,8 @@ function findParentDiv(idEnding)
     else if(associatematch)
     {
         matchInfo = associatematch[0].split("-");    
-        console.log(matchInfo);
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
         typeId += "-"+matchInfo[1];
-        
-        $(document).find(".msm_associate_childs").each(function() {
-           console.log("existing associates: "+this.id); 
-        });
-        
-        console.log("typeId: "+typeId);
         
         parent = document.getElementById("msm_associate_childs-"+typeId);
     }

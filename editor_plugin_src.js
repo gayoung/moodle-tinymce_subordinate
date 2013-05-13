@@ -60,8 +60,6 @@
                     
                     subFlag = tempString;
                     
-                    console.log("subFlag: "+subFlag);
-                    
                     lasttype = type[2].split("-");
 
                     indexNumber = type[1]+lasttype[0];
@@ -226,6 +224,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             // nested subordinates in statement theorem needs to match the statement theorem id not theorem id
             var statementTheoremmatch = /^\S*(statementtheoremcontent\d+\S*)$/;
             var partTheoremmatch = /^\S*(parttheoremcontent\d+\S*)$/;
+            var associatematch = /^\S*(infocontent\d+\S*)$/;
             var idReplacement = '';
             if(ed.editorId.match(statementTheoremmatch))
             {                
@@ -263,6 +262,18 @@ function makeSubordinateDialog(ed, idNumber, isSub)
                     
                 idReplacement = tempString.replace(partpattern, "$2"); 
             }
+            else if(ed.editorId.match(associatematch))
+            {
+                var assopattern = /([A-Za-z]*?)(\d+-\d+)((?:-\d+)*)/;
+                var tempString = '';
+                for(var i = 1; i < editorIdInfo.length-1; i++)
+                {
+                    tempString += editorIdInfo[i] + "-";
+                }
+                tempString += editorIdInfo[editorIdInfo.length-1];
+                    
+                idReplacement = tempString.replace(assopattern, "$2"); 
+            }
             else
             {
                 idReplacement = editorIdInfo[1].replace(pattern, "$2");                   
@@ -277,16 +288,9 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }  
             oldString += wordIdInfo[wordIdInfo.length-2];
             
-            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");              
-            console.log("idNumber: "+idNumber);
-            
-            $(document).find(".msm_subordinate_containers").each(function() {
-                console.log("existing containers: "+this.id); 
-            });
+            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");   
             
             container = document.getElementById('msm_subordinate_container-'+idNumber);
-            
-            
         }
     }
     else
