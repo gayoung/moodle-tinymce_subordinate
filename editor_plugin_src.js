@@ -198,15 +198,10 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             container = document.createElement("div");
             idNumber = isExistingIndex(idNumber+"-1");
             
-            console.log("idNumber: "+idNumber);
-            
             container.id = 'msm_subordinate_container-'+idNumber;
             container.className = 'msm_subordinate_containers';
              
             var parentDiv = findParentDiv(isSub);
-            
-            console.log(parentDiv);
-            
             $(parentDiv).append(container);
         }
         else
@@ -223,93 +218,9 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             
             var pattern = /([A-Za-z]*?)(\d+)((?:-\d+)*)/;
             
-            var editorIdInfo = ed.editorId.split("-");       
+            var editorIdInfo = ed.editorId.split("-");   
             
-            // nested subordinates in statement theorem needs to match the statement theorem id not theorem id
-            var statementTheoremmatch = /^\S*(statementtheoremcontent\d+\S*)$/;
-            var statementTheoremRefmatch = /^\S*(theoremrefcontent\d+\S*)$/;
-            var partTheoremmatch = /^\S*(parttheoremcontent\d+\S*)$/;
-            var partTheoremRefmatch = /^\S*(theoremrefpart\d+\S*)$/;
-            var associatematch = /^\S*(infocontent\d+\S*)$/;
-            var refmatch = /^\S*((defrefcontent|commentrefcontent)\d+\S*)/;
-            var idReplacement = '';
-            if(ed.editorId.match(statementTheoremmatch))
-            {                
-                var subordinatematch = /^\S*(subordinateinfoContent)+(statementtheoremcontent\d+\S*)$/;
-                
-                if(ed.editorId.match(subordinatematch))
-                {
-                    idReplacement = editorIdInfo[1].replace(pattern, "$2");     
-                }
-                else
-                {                    
-                    var tempString = '';
-                    for(var i = 1; i < editorIdInfo.length-1; i++)
-                    {
-                        tempString += editorIdInfo[i] + "-";
-                    }
-                    tempString += editorIdInfo[editorIdInfo.length-1];
-                    
-                    var tempidReplacement = tempString.replace(pattern, "$3");       
-                    
-                    var tempStringInfo = tempidReplacement.split("-");                  
-                    
-                    idReplacement = tempStringInfo[1];
-                }
-            }
-            else if(ed.editorId.match(partTheoremmatch))
-            {
-                var partpattern = /([A-Za-z]*?)(\d+-\d+-\d+)((?:-\d+)*)/;
-                var tempString = '';
-                for(var i = 1; i < editorIdInfo.length-1; i++)
-                {
-                    tempString += editorIdInfo[i] + "-";
-                }
-                tempString += editorIdInfo[editorIdInfo.length-1];
-                    
-                idReplacement = tempString.replace(partpattern, "$2"); 
-            }
-            else if(ed.editorId.match(associatematch))
-            {
-                var assopattern = /([A-Za-z]*?)(\d+-\d+)((?:-\d+)*)/;
-                var tempString = '';
-                for(var i = 1; i < editorIdInfo.length-1; i++)
-                {
-                    tempString += editorIdInfo[i] + "-";
-                }
-                tempString += editorIdInfo[editorIdInfo.length-1];
-                    
-                idReplacement = tempString.replace(assopattern, "$2"); 
-            }
-            else if((ed.editorId.match(refmatch)) || (ed.editorId.match(partTheoremRefmatch)))
-            {
-                var refpattern = /([A-Za-z]*?)(\d+-\d+-\d+)((?:-\d+)*)/;
-                var tempString = '';
-                for(var i = 1; i < editorIdInfo.length-1; i++)
-                {
-                    tempString += editorIdInfo[i] + "-";
-                }
-                tempString += editorIdInfo[editorIdInfo.length-1];
-                    
-                idReplacement = tempString.replace(refpattern, "$2"); 
-            }
-            else if(ed.editorId.match(statementTheoremRefmatch))
-            {
-                var theoremcontentrefpattern = /([A-Za-z]*?)(\d+-\d+-\d+-\d+)((?:-\d+)*)/;
-                var tempString = '';
-                for(var i = 1; i < editorIdInfo.length-1; i++)
-                {
-                    tempString += editorIdInfo[i] + "-";
-                }
-                tempString += editorIdInfo[editorIdInfo.length-1];
-                    
-                idReplacement = tempString.replace(theoremcontentrefpattern, "$2"); 
-            }
-            else
-            {
-                idReplacement = editorIdInfo[1].replace(pattern, "$2");                   
-            }  
-            
+            var idReplacement = replaceIdEnding(ed, editorIdInfo);            
             
             var wordIdInfo = wordId.split("-");           
             var oldString = '';
@@ -319,17 +230,9 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             }  
             oldString += wordIdInfo[wordIdInfo.length-2];
             
-            console.log("idReplacement: "+idReplacement);
-            
             idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");   
             
-            console.log("looking for this container: msm_subordinate_container-"+idNumber);
-            
             container = document.getElementById('msm_subordinate_container-'+idNumber);
-            
-            $(document).find(".msm_subordinate_containers").each(function() {
-                console.log("existing containers: " +this.id); 
-            });
         }
     }
     else

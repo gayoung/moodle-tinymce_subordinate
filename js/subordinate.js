@@ -717,8 +717,8 @@ function findParentDiv(idEnding)
     var defrefPattern = /^\S*(defrefcontent\d+\S*)$/;
     var statementTheoremPattern = /^\S*(statementtheoremcontent\d+\S*)$/;
     var statementTheoremRefPattern = /^\S*(theoremrefcontent\d+\S*)$/;
-    var partTheoremPattern = /^\S*(theoremrefpart\d+\S*)$/;
-    var partTheoremRefPattern = /^\S*(parttheoremrefcontent\d+\S*)$/;
+    var partTheoremPattern = /^\S*(parttheoremcontent\d+\S*)$/;
+    var partTheoremRefPattern = /^\S*(theoremrefpart\d+\S*)$/;
     var commentPattern = /^\S*(commentcontent\d+\S*)$/;
     var commentrefPattern = /^\S*(commentrefcontent\d+\S*)$/;
     var bodyPattern = /^\S*(bodycontent\d+\S*)$/;
@@ -847,7 +847,7 @@ function findParentDiv(idEnding)
     {
         matchInfo = partrefmatch[0].split("-");   
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
-        typeId += "-"+matchInfo[1];
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2]+"-"+matchInfo[3];
         
         console.log("typeID: "+typeId);
         
@@ -879,4 +879,103 @@ function isExistingIndex(oldid)
     }    
     
     return newId;
+}
+
+// replaces temporary HTML id given before view.php with database id after view.php script is triggered
+function replaceIdEnding(ed, edIdInfo)
+{
+    var pattern = /([A-Za-z]*?)(\d+)((?:-\d+)*)/;
+    var tempString = '';
+    // nested subordinates in statement theorem needs to match the statement theorem id not theorem id
+    var statementTheoremmatch = /^\S*(statementtheoremcontent\d+\S*)$/;
+    var statementTheoremRefmatch = /^\S*(theoremrefcontent\d+\S*)$/;
+    var partTheoremmatch = /^\S*(parttheoremcontent\d+\S*)$/;
+    var partTheoremRefmatch = /^\S*(theoremrefpart\d+\S*)$/;
+    var associatematch = /^\S*(infocontent\d+\S*)$/;
+    var refmatch = /^\S*((defrefcontent|commentrefcontent)\d+\S*)/;
+    var idReplacement = '';
+    if(ed.editorId.match(statementTheoremmatch))
+    {                
+        var subordinatematch = /^\S*(subordinateinfoContent)+(statementtheoremcontent\d+\S*)$/;
+                
+        if(ed.editorId.match(subordinatematch))
+        {
+            idReplacement = edIdInfo[1].replace(pattern, "$2");     
+        }
+        else
+        {                    
+            for(var i = 1; i < edIdInfo.length-1; i++)
+            {
+                tempString += edIdInfo[i] + "-";
+            }
+            tempString += edIdInfo[edIdInfo.length-1];
+                    
+            var tempidReplacement = tempString.replace(pattern, "$3");       
+                    
+            var tempStringInfo = tempidReplacement.split("-");                  
+                    
+            idReplacement = tempStringInfo[1];
+        }
+    }
+    else if(ed.editorId.match(partTheoremmatch))
+    {
+        var partpattern = /([A-Za-z]*?)(\d+-\d+-\d+)((?:-\d+)*)/;
+        for(var i = 1; i < edIdInfo.length-1; i++)
+        {
+            tempString += edIdInfo[i] + "-";
+        }
+        tempString += edIdInfo[edIdInfo.length-1];
+                    
+        idReplacement = tempString.replace(partpattern, "$2"); 
+    }
+    else if(ed.editorId.match(associatematch))
+    {
+        var assopattern = /([A-Za-z]*?)(\d+-\d+)((?:-\d+)*)/;
+        for(var i = 1; i < edIdInfo.length-1; i++)
+        {
+            tempString += edIdInfo[i] + "-";
+        }
+        tempString += edIdInfo[edIdInfo.length-1];
+                    
+        idReplacement = tempString.replace(assopattern, "$2"); 
+    }
+    else if(ed.editorId.match(refmatch))
+    {
+        var refpattern = /([A-Za-z]*?)(\d+-\d+-\d+)((?:-\d+)*)/;
+        for(var i = 1; i < edIdInfo.length-1; i++)
+        {
+            tempString += edIdInfo[i] + "-";
+        }
+        tempString += edIdInfo[edIdInfo.length-1];
+                    
+        idReplacement = tempString.replace(refpattern, "$2"); 
+    }
+    else if(ed.editorId.match(statementTheoremRefmatch))
+    {
+        var theoremcontentrefpattern = /([A-Za-z]*?)(\d+-\d+-\d+-\d+)((?:-\d+)*)/;
+        for(var i = 1; i < edIdInfo.length-1; i++)
+        {
+            tempString += edIdInfo[i] + "-";
+        }
+        tempString += edIdInfo[edIdInfo.length-1];
+                    
+        idReplacement = tempString.replace(theoremcontentrefpattern, "$2"); 
+    }
+    else if(ed.editorId.match(partTheoremRefmatch))
+    {
+        var theorempartrefpattern = /([A-Za-z]*?)(\d+-\d+-\d+-\d+-\d+)((?:-\d+)*)/;        
+        for(var i = 1; i < edIdInfo.length-1; i++)
+        {
+            tempString += edIdInfo[i] + "-";
+        }
+        tempString += edIdInfo[edIdInfo.length-1];
+                    
+        idReplacement = tempString.replace(theorempartrefpattern, "$2"); 
+    }
+    else
+    {
+        idReplacement = edIdInfo[1].replace(pattern, "$2");                   
+    }  
+            
+    return idReplacement;
 }
