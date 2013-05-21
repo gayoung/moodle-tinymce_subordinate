@@ -202,7 +202,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
             container.className = 'msm_subordinate_containers';
              
             var parentDiv = findParentDiv(isSub);
-            $(parentDiv).append(container);
+            $(parentDiv).append(container);            
         }
         else
         {

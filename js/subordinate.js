@@ -128,7 +128,7 @@ function initInfoEditor(id)
             langrev:-1,
             theme_advanced_buttons1:"fontselect,fontsizeselect,formatselect,|,undo,redo,|,search,replace,|,fullscreen",
             theme_advanced_buttons2:"bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,|,cleanup,removeformat,pastetext,pasteword,|,forecolor,backcolor,|,ltr,rtl",
-            theme_advanced_buttons3:"bullist,numlist,outdent,indent,|,link,unlink,moodlenolink,subordinate,|,image,moodlemedia,dragmath,nonbreaking,charmap,table,|,code,spellchecker",
+            theme_advanced_buttons3:"bullist,numlist,outdent,indent,|,link,unlink,moodlenolink,subordinate,|,dragmath,nonbreaking,charmap,table,|,code,spellchecker",
             moodle_init_plugins:"dragmath:loader.php/dragmath/-1/editor_plugin.js,moodlenolink:loader.php/moodlenolink/-1/editor_plugin.js,spellchecker:loader.php/spellchecker/-1/editor_plugin.js,moodleimage:loader.php/moodleimage/-1/editor_plugin.js,moodlemedia:loader.php/moodlemedia/-1/editor_plugin.js",
             file_browser_callback:"M.editor_tinymce.filepicker",
             moodle_plugin_base: M.cfg.wwwroot+"/lib/editor/tinymce/plugins/"
@@ -386,7 +386,7 @@ function submitSubForm(ed, id, subId)
     else
     {
         selectedNode = ed.selection.getNode().tagName;
-    }
+    }    
     
     var newSubordinateDiv = null;
     
@@ -407,7 +407,7 @@ function submitSubForm(ed, id, subId)
         
         newSubordinateDiv = replaceSubordinateDiv(id, textId, subId);
     }
-            
+                
     if(newSubordinateDiv instanceof Array)
     {
         nullErrorWarning(newSubordinateDiv, id);
@@ -506,7 +506,7 @@ function createSubordinateDiv(index, oldidString, flag)
     {
         idString = oldidString;
     }
-    
+        
     var resultContainer = document.createElement("div");
     resultContainer.id = "msm_subordinate_result-"+idString;
     resultContainer.className = "msm_subordinate_results";
@@ -686,7 +686,7 @@ function createDialog(ed, idNumber)
     var wHeight = $(window).height();
                 
     var dWidth = wWidth*0.6;
-    var dHeight = wHeight*0.8;
+    var dHeight = wHeight*0.8;    
                 
     $('#msm_subordinate_container-'+idNumber).dialog({
         open: function(event, ui) {
@@ -848,8 +848,6 @@ function findParentDiv(idEnding)
         matchInfo = partrefmatch[0].split("-");   
         typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
         typeId += "-"+matchInfo[1]+"-"+matchInfo[2]+"-"+matchInfo[3];
-        
-        console.log("typeID: "+typeId);
         
         parent = document.getElementById("msm_theoremref_statement_container-"+typeId);
     }
