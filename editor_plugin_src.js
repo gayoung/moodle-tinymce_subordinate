@@ -187,9 +187,6 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     selectTypeOption4.appendChild(selectTypeOption4Value);
     
     var dialogContentForm = document.createElement('div');
-    var dialogButtonContainer = document.createElement('div');
-    var saveButton = document.createElement('input');
-    var cancelButton = document.createElement('input');
     
     if(isSub != '')
     {
@@ -265,24 +262,6 @@ function makeSubordinateDialog(ed, idNumber, isSub)
         
     dialogContentForm.id = 'msm_subordinate_content_form_container-'+idNumber;
     dialogContentForm.className = "msm_subordinate_content_form_containers";
-        
-    dialogButtonContainer.className = 'msm_subordinate_button_container';
-        
-    saveButton.setAttribute("type", "button");
-    saveButton.id = 'msm_subordinate_submit-'+idNumber;
-    saveButton.className = 'msm_subordinate_button';
-    saveButton.setAttribute("value", "Save");
-    saveButton.onclick = function() {
-        submitSubForm(ed, idNumber, isSub);
-    };
-        
-    cancelButton.setAttribute("type", "button");
-    cancelButton.id = 'msm_subordinate_cancel-'+idNumber;
-    cancelButton.className = 'msm_subordinate_button';
-    cancelButton.setAttribute("value", "Cancel");
-    cancelButton.onclick = function() {
-        closeSubFormDialog(idNumber);
-    };
     
     var infoForm = makeInfoForm(ed, idNumber);
     dialogContentForm.appendChild(infoForm);
@@ -291,10 +270,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     selectTypeMenu.appendChild(selectTypeOption2);
     selectTypeMenu.appendChild(selectTypeOption3);
     selectTypeMenu.appendChild(selectTypeOption4);
-        
-    dialogButtonContainer.appendChild(saveButton);
-    dialogButtonContainer.appendChild(cancelButton);
-        
+    
     dialogFormContainer.appendChild(selectedTextlabel);
     dialogFormContainer.appendChild(selectedTextInput);
     dialogFormContainer.appendChild(document.createElement('br'));
@@ -306,7 +282,6 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     dialogForm.appendChild(dialogFormContainer);
     dialogForm.appendChild(document.createElement('br'));
     dialogForm.appendChild(document.createElement('br'));
-    dialogForm.appendChild(dialogButtonContainer);
         
     dialogwhole.appendChild(dialogForm);
       
@@ -334,7 +309,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
         loadPreviousData(ed, idNumber);
     }
     
-    createDialog(ed, idNumber);
+    createDialog(ed, idNumber, isSub);
     
 }
 

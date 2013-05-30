@@ -165,7 +165,7 @@ function initInfoEditor(id)
         })
         
         M.editor_tinymce.init_filepicker(Y, contentid, tinymce_filepicker_options);
-    });
+    }); 
 }
 
 function makeInfoForm(ed, id)
@@ -367,12 +367,13 @@ function closeSubFormDialog(id)
 }
 
 /**
-*
-* @param tinyMCE object ed --> the id of the editor where the popup was triggered from
-* @param string id --> ending of HTML ID of the subordinate components to make them unique
-**/
+ * tinyMCE object ed --> the id of the editor where the popup was triggered from
+ * string id --> ending of HTML ID of the subordinate components to make them unique
+ * string subId
+ */
 function submitSubForm(ed, id, subId)
 {
+    console.log("at submitSubForm");
     var selectedText = ed.selection.getContent({
         format: 'text'
     });
@@ -455,7 +456,7 @@ function submitSubForm(ed, id, subId)
            
             ed.selection.setContent(newContent);
         }
-        
+        console.log("right before calling close subform dialog");
         closeSubFormDialog(id);
     }
    
@@ -679,7 +680,7 @@ function checkForExistence(oldtestId)
     return newTestId;
 }
 
-function createDialog(ed, idNumber)
+function createDialog(ed, idNumber, subId)
 {
     // to fix the dialog window size to 80% of window size
     var wWidth = $(window).width();
@@ -695,6 +696,14 @@ function createDialog(ed, idNumber)
                 format : 'text'
             }));
             initInfoEditor(idNumber);
+        },
+        buttons: {
+            "Save": function() {
+                submitSubForm(ed, idNumber, subId);
+            },
+            "Cancel": function() {
+                closeSubFormDialog(idNumber);
+            }
         },
         modal:true,
         autoOpen: false,
