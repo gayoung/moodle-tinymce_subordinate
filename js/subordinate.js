@@ -411,6 +411,7 @@ function submitSubForm(ed, id, subId)
                 
     if(newSubordinateDiv instanceof Array)
     {
+        console.log(newSubordinateDiv);
         nullErrorWarning(newSubordinateDiv, id);
     }
     else
@@ -517,7 +518,10 @@ function createSubordinateDiv(index, oldidString, flag)
             format: "html"
         });
        
-        if(this.value == '')
+       // if no match is found, indexOf returns -1
+        var isInfoTitle = this.id.indexOf("infoTitle");
+       
+        if((this.value == '') && (isInfoTitle == -1))
         {
             errorArray.push(this.id+"_ifr");
         }
