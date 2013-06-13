@@ -259,12 +259,16 @@ function loadPreviousData(editor, id)
     var prevInfoContentValue = null;   
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
+        console.log("subordinate result divs");
+        console.log(this.id);
         if(this.id == 'msm_subordinate_select-'+indexId)
         {
             prevSelectValue = $(this).text();
         }
         else if(this.id == 'msm_subordinate_url-'+indexId)
         {
+            console.log("matched with subordinate url div");
+            console.log($(this).text());
             prevUrlValue = $(this).text();
         }
         else if(this.id == 'msm_subordinate_infoTitle-'+indexId)
@@ -373,7 +377,6 @@ function closeSubFormDialog(id)
  */
 function submitSubForm(ed, id, subId)
 {
-    console.log("at submitSubForm");
     var selectedText = ed.selection.getContent({
         format: 'text'
     });
@@ -457,7 +460,6 @@ function submitSubForm(ed, id, subId)
            
             ed.selection.setContent(newContent);
         }
-        console.log("right before calling close subform dialog");
         closeSubFormDialog(id);
     }
    
