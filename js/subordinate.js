@@ -441,7 +441,7 @@ function submitSubForm(ed, id, subId)
     
         
         var urltext = '';
-        if($("#msm_subordinate_url-"+id).val() != '')
+        if($("#msm_subordinate_select-"+id).val() == 'External Link')
         {
             urltext = $("#msm_subordinate_url-"+id).val();
         }
@@ -537,7 +537,8 @@ function createSubordinateDiv(index, oldidString, flag)
         resultSelectDiv.appendChild(resultSelectText);
         
         var resultUrlDiv = null;
-        if($("#msm_subordinate_url-"+index).val() != '')
+        
+        if($("#msm_subordinate_select-"+index).val() == 'External Link')
         {
             resultUrlDiv = document.createElement("div");
             resultUrlDiv.id = "msm_subordinate_url-"+idString
