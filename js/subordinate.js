@@ -276,7 +276,17 @@ function loadPreviousData(editor, id)
             prevInfoTitleValue = $(this).html();
         }
         else if(this.id == 'msm_subordinate_infoContent-'+indexId)
-        {
+        {     
+            // to process the math elements to load it properly
+            $(this).find(".matheditor").each(function() {
+                var newcontent = '';
+                $(this).find("script").each(function() {
+                    newcontent = $(this).html(); 
+                });
+          
+                $(this).empty();
+                $(this).append(newcontent);
+            });       
             prevInfoContentValue = $(this).html();
         }
     });
@@ -552,8 +562,17 @@ function createSubordinateDiv(index, oldidString, flag)
         $(resultTitleDiv).append($("#msm_subordinate_infoTitle-"+index).val());
     
         var resultContentDiv = document.createElement("div");
-        resultContentDiv.id = "msm_subordinate_infoContent-"+idString;
-    
+        resultContentDiv.id = "msm_subordinate_infoContent-"+idString;        
+       
+        $("#msm_subordinate_infoContent-"+index).find(".matheditor").each(function() {
+            var newcontent = '';
+            $(this).find("script").each(function() {
+                newcontent = $(this).html(); 
+            });
+          
+            $(this).empty();
+            $(this).append("\("+newcontent+"\)");
+        });  
         $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).val());
     
         resultContainer.appendChild(resultSelectDiv);
