@@ -80,10 +80,22 @@ function changeForm(e, ed, id) {
             container.appendChild(fieldset);
             break;
         case 2:
-            alert("internal ref");
+            var div = document.createElement("div");
+            var text = document.createTextNode("--- To be implemented ---");
+            div.appendChild(text);
+            var br = document.createElement("br");
+            container.appendChild(br);
+            container.appendChild(div);
+//            alert("internal ref");
             break;
         case 3:
-            alert("external ref");
+             var div = document.createElement("div");
+            var text = document.createTextNode("--- To be implemented ---");
+            div.appendChild(text);
+             var br = document.createElement("br");
+            container.appendChild(br);
+            container.appendChild(div);
+//            alert("external ref");
             break;
     }
     
