@@ -263,7 +263,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     dialogContentForm.id = 'msm_subordinate_content_form_container-'+idNumber;
     dialogContentForm.className = "msm_subordinate_content_form_containers";
     
-    var infoForm = makeInfoForm(ed, idNumber);
+    var infoForm = makeInfoForm(ed, idNumber, false);
     dialogContentForm.appendChild(infoForm);
     
     selectTypeMenu.appendChild(selectTypeOption1);

@@ -1,14 +1,6 @@
-//
+
 var _subIndex = 1;
-//
-//function init(content, id){
-// var selectedText;
-//
-// selectedText= document.getElementById('msm_subordinate_highlighted-'+id);
-//
-// selectedText.value = content;
-//}
-//
+
 function changeForm(e, ed, id) {
     var container = document.getElementById("msm_subordinate_content_form_container-"+id);
     var selectVal;
@@ -52,7 +44,7 @@ function changeForm(e, ed, id) {
         }
     });
     
-    var fieldset = makeInfoForm(ed, id);
+    var fieldset = makeInfoForm(ed, id, false);
     
     //-----------------------------start of external url form-----------------------------//
     var urlFieldSet = appendUrlForm(id);
@@ -69,7 +61,13 @@ function changeForm(e, ed, id) {
     {
         $("#msm_subordinate_url-"+id).parent().empty().remove();
     }
-        
+    
+    var msmIdInfo = window.location.search.split("=");   
+    var msmId = msmIdInfo[1]; 
+    
+    var accordionContainer = document.createElement("div");
+
+    var refString = '';
     switch(selectVal)
     {
         case 0:
@@ -80,24 +78,26 @@ function changeForm(e, ed, id) {
             container.appendChild(fieldset);
             break;
         case 2:
-            var div = document.createElement("div");
-            var text = document.createTextNode("--- To be implemented ---");
-            div.appendChild(text);
-            var br = document.createElement("br");
-            container.appendChild(br);
-            container.appendChild(div);
-//            alert("internal ref");
+            accordionContainer.id = "msm_subordinate_accordion-"+id;
+            container.appendChild(accordionContainer);
+            makeRefForm(ed, id);           
+            refString = "Internal References";           
             break;
         case 3:
-             var div = document.createElement("div");
-            var text = document.createTextNode("--- To be implemented ---");
-            div.appendChild(text);
-             var br = document.createElement("br");
-            container.appendChild(br);
-            container.appendChild(div);
-//            alert("external ref");
+            accordionContainer.id = "msm_subordinate_accordion-"+id;
+            container.appendChild(accordionContainer);
+            makeRefForm(ed, id);           
+            refString = "External References";
             break;
+        
     }
+    
+    $("#msm_subordinate_accordion-"+id).accordion({
+        heightStyle: "content"
+    }); 
+    $("#msm_search_submit").click(function(e) {
+        submitAjax(refString, msmId, id, "subordinate");
+    });
     
     $("#msm_subordinate_form-"+id).find(".msm_subordinate_textareas").each(function() {
         if(this.id == "msm_subordinate_infoTitle-"+id)
@@ -112,6 +112,53 @@ function changeForm(e, ed, id) {
     
     
     initInfoEditor(id);
+}
+
+function makeRefForm(ed, id)
+{
+    var infoAccordionHeader = $("<h3> Information Form </h3>");
+    var infoFormFieldset = makeInfoForm(ed, id, true);
+    var infoDiv = $("<div id='msm_info_accordion_container-"+id+"'></div>");
+    
+    $(infoDiv).append(infoFormFieldset);
+    
+    $("#msm_subordinate_accordion-"+id).append(infoAccordionHeader);
+    $("#msm_subordinate_accordion-"+id).append(infoDiv);
+    
+    var searchAccordionHeader = $("<h3> Search Form </h3>");
+    var searchDiv = $("<div>\n\
+                                <form id='msm_search_form'>\n\
+                                    <label for='msm_search_type'>Type: </label>\n\
+                                    <select id='msm_search_type' name='msm_search_type'>\n\
+                                        <option value='definition'>Definition</option>\n\
+                                        <option value='theorem'>Theorem</option>\n\
+                                        <option value='comment'>Comment</option>\n\
+                                        <option value='unit'>Unit</option>\n\
+                                    </select>\n\
+                                    <br /><br />\n\
+                                    <label for='msm_search_word'>Search: </label>\n\
+                                    <input id='msm_search_word' name='msm_search_word' style='width: 80%;'/>\n\
+                                    <select id='msm_search_word_type' name='msm_search_word_type' style='margin-left: 1%;'>\n\
+                                        <option value='title'>Title</option>\n\
+                                        <option value='content'>Content</option>\n\
+                                        <option value='description'>Description</option>\n\
+                                        <option value='all'>Title/Content/Description</option>\n\
+                                    </select>\n\
+                                    <br /><br />\n\
+                                    <input type='button' value='Search' id='msm_search_submit' class='msm_search_buttons'/>\n\
+                                </form>\n\
+                            </div>");
+    
+    $("#msm_subordinate_accordion-"+id).append(searchAccordionHeader);
+    $("#msm_subordinate_accordion-"+id).append(searchDiv);
+    
+    var searchResultAccordionHeader = $("<h3> Search Results </h3>");
+    var searchResultAccordionDiv = $("<div id='msm_search_result'></div>");
+    
+    $("#msm_subordinate_accordion-"+id).append(searchResultAccordionHeader);
+    $("#msm_subordinate_accordion-"+id).append(searchResultAccordionDiv);
+    
+    $("input#msm_search_word").css("width", "75%");
 }
 
 function initInfoEditor(id)
@@ -180,16 +227,19 @@ function initInfoEditor(id)
     }); 
 }
 
-function makeInfoForm(ed, id)
+function makeInfoForm(ed, id, refFlag)
 {
     // making a fieldset element for the info form (all selection will be using it
     // so make it available to all switch cases)
     var fieldset = document.createElement("fieldset");
-    fieldset.setAttribute("style", "border:1px solid black; padding: 2%; margin-top: 1%;");
-        
-    var infoLegend = document.createElement("legend");
-    var legendText = document.createTextNode("Subordinate Information Form");
-    infoLegend.appendChild(legendText);
+    if(!refFlag)
+    {
+        fieldset.setAttribute("style", "border:1px solid black; padding: 2%; margin-top: 1%;");
+
+        var infoLegend = document.createElement("legend");
+        var legendText = document.createTextNode("Subordinate Information Form");
+        infoLegend.appendChild(legendText);
+    }
         
     var infotitlediv = document.createElement("div");
     var infocontentdiv = document.createElement("div");
@@ -217,8 +267,10 @@ function makeInfoForm(ed, id)
     infoContentInput.name = "msm_subordinate_infoContent-"+id;
     infoContentInput.className = "msm_subordinate_textareas";
    
-       
-    fieldset.appendChild(infoLegend);
+    if(!refFlag)
+    {
+        fieldset.appendChild(infoLegend);
+    }
     infotitlediv.appendChild(infoTitleLabel);
     infotitlediv.appendChild(infoTitleInput);
     fieldset.appendChild(infotitlediv);
@@ -436,7 +488,6 @@ function submitSubForm(ed, id, subId)
                 
     if(newSubordinateDiv instanceof Array)
     {
-        console.log(newSubordinateDiv);
         nullErrorWarning(newSubordinateDiv, id);
     }
     else
@@ -551,11 +602,29 @@ function createSubordinateDiv(index, oldidString, flag)
         }
     });
     
+    var selectedBox =  $("#msm_search_result_table input").filter(":checked");
+    var selectedValue = '';
+    // no selection made in search result --> meaning only infotitle/info contents are filled.
+    // so switch select value to information
+    if(selectedBox.length == 0)
+    {
+        selectedValue = "Information";
+    }
+    
     if(errorArray.length == 0)
     {
         var resultSelectDiv = document.createElement("div");
         resultSelectDiv.id = "msm_subordinate_select-"+idString;
-        var resultSelectText = document.createTextNode($("#msm_subordinate_select-"+index).val());
+        var resultSelectText='';
+        if(selectedValue != '')
+        {
+            resultSelectText = document.createTextNode(selectedValue);
+        }
+        else
+        {
+            resultSelectText = document.createTextNode($("#msm_subordinate_select-"+index).val());
+        }
+        
         resultSelectDiv.appendChild(resultSelectText);
         
         var resultUrlDiv = null;
@@ -586,7 +655,25 @@ function createSubordinateDiv(index, oldidString, flag)
             $(this).append("\("+newcontent+"\)");
         });  
         $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).val());
-    
+        
+        // for internal/external reference values to be stored
+        var refValueDiv = document.createElement("div");  
+        refValueDiv.id = "msm_subordinate_ref-"+idString;
+        
+        if(selectedBox.length > 0)
+        {
+            var selectedRow = $(selectedBox).closest("tr");                    
+            var selectedCells = $(selectedRow).find(".msm_search_result_table_cells");
+            var selectedCheckbox = $(selectedCells[0]).find("input");
+                    
+            var selectedId = $(selectedCheckbox[0]).attr("id").split("-");
+            
+            var refValueText = document.createTextNode(selectedId[1]);
+            $(refValueDiv).append(refValueText);           
+            
+        }
+        
+        // inserting all parts of the subordinate result values into the container div
         resultContainer.appendChild(resultSelectDiv);
         if(resultUrlDiv != null)
         {
@@ -594,6 +681,7 @@ function createSubordinateDiv(index, oldidString, flag)
         }
         resultContainer.appendChild(resultTitleDiv);
         resultContainer.appendChild(resultContentDiv);
+        resultContainer.appendChild(refValueDiv);
         
         _subIndex++;
     
