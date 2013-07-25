@@ -110,7 +110,6 @@ function changeForm(e, ed, id) {
         }
     });
     
-    
     initInfoEditor(id);
 }
 
@@ -320,19 +319,16 @@ function loadPreviousData(editor, id)
     var prevSelectValue = null;
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
-    var prevInfoContentValue = null;   
+    var prevInfoContentValue = null;  
+    var prevRefId = null;
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
-        console.log("subordinate result divs");
-        console.log(this.id);
         if(this.id == 'msm_subordinate_select-'+indexId)
         {
             prevSelectValue = $(this).text();
         }
         else if(this.id == 'msm_subordinate_url-'+indexId)
         {
-            console.log("matched with subordinate url div");
-            console.log($(this).text());
             prevUrlValue = $(this).text();
         }
         else if(this.id == 'msm_subordinate_infoTitle-'+indexId)
@@ -352,6 +348,10 @@ function loadPreviousData(editor, id)
                 $(this).append(newcontent);
             });       
             prevInfoContentValue = $(this).html();
+        }
+        else if(this.id == 'msm_subordinate_ref-'+indexId)
+        {
+            prevRefId = $(this).text();
         }
     });
             
@@ -378,6 +378,15 @@ function loadPreviousData(editor, id)
         var urlFieldSet = appendUrlForm(id);
         $("#msm_subordinate_content_form_container-"+id).prepend(urlFieldSet);
         $("#msm_subordinate_form-"+id+ " #msm_subordinate_url-"+id).val(prevUrlValue);
+    }
+    
+    if((prevRefId != '')&&(prevRefId != 'undefined')&&(prevRefId !== null))
+    {
+        var container = $("#msm_subordinate_content_form_container-"+id);
+        var accordionContainer = document.createElement("div");
+        accordionContainer.id = "msm_subordinate_accordion-"+id;
+        container.appendChild(accordionContainer);
+        makeRefForm(editor, id);           
     }
     
     $(".msm_subordinate_textareas").each(function() {
@@ -603,28 +612,26 @@ function createSubordinateDiv(index, oldidString, flag)
     });
     
     var selectedBox =  $("#msm_search_result_table input").filter(":checked");
-    var selectedValue = '';
+    
+    console.log("selectedBox")
+    console.log(selectedBox);
     // no selection made in search result --> meaning only infotitle/info contents are filled.
-    // so switch select value to information
-    if(selectedBox.length == 0)
-    {
-        selectedValue = "Information";
-    }
+    // so switch select value to information    
     
     if(errorArray.length == 0)
     {
         var resultSelectDiv = document.createElement("div");
-        resultSelectDiv.id = "msm_subordinate_select-"+idString;
-        var resultSelectText='';
-        if(selectedValue != '')
+        resultSelectDiv.id = "msm_subordinate_select-"+idString; 
+        
+        var selectedValue= $("#msm_subordinate_select-"+index).val();
+        
+        if((selectedBox.length == 0) && ((selectedValue == "Internal Reference") || (selectedValue == "External Reference")))
         {
-            resultSelectText = document.createTextNode(selectedValue);
-        }
-        else
-        {
-            resultSelectText = document.createTextNode($("#msm_subordinate_select-"+index).val());
+            selectedValue == "information";
         }
         
+        var resultSelectText = document.createTextNode(selectedValue);
+            
         resultSelectDiv.appendChild(resultSelectText);
         
         var resultUrlDiv = null;
@@ -657,11 +664,14 @@ function createSubordinateDiv(index, oldidString, flag)
         $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).val());
         
         // for internal/external reference values to be stored
-        var refValueDiv = document.createElement("div");  
-        refValueDiv.id = "msm_subordinate_ref-"+idString;
+        
+        var refValueDiv='';
         
         if(selectedBox.length > 0)
         {
+            refValueDiv = document.createElement("div");  
+            refValueDiv.id = "msm_subordinate_ref-"+idString;
+        
             var selectedRow = $(selectedBox).closest("tr");                    
             var selectedCells = $(selectedRow).find(".msm_search_result_table_cells");
             var selectedCheckbox = $(selectedCells[0]).find("input");
@@ -669,8 +679,7 @@ function createSubordinateDiv(index, oldidString, flag)
             var selectedId = $(selectedCheckbox[0]).attr("id").split("-");
             
             var refValueText = document.createTextNode(selectedId[1]);
-            $(refValueDiv).append(refValueText);           
-            
+            $(refValueDiv).append(refValueText);             
         }
         
         // inserting all parts of the subordinate result values into the container div
@@ -681,7 +690,11 @@ function createSubordinateDiv(index, oldidString, flag)
         }
         resultContainer.appendChild(resultTitleDiv);
         resultContainer.appendChild(resultContentDiv);
-        resultContainer.appendChild(refValueDiv);
+        
+        if(selectedBox.length > 0)
+        {
+            resultContainer.appendChild(refValueDiv);
+        }
         
         _subIndex++;
     
