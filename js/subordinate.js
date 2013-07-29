@@ -26,7 +26,7 @@ function changeForm(e, ed, id) {
             selectVal = e.target.selectedIndex;
             break;
     }
-        
+    
     var prevValues = [];
     
     $("#msm_subordinate_form-"+id).find(".msm_subordinate_textareas").each(function() {
@@ -80,20 +80,20 @@ function changeForm(e, ed, id) {
         case 2:
             accordionContainer.id = "msm_subordinate_accordion-"+id;
             container.appendChild(accordionContainer);
-            makeRefForm(ed, id);           
+            makeRefForm(ed, id, '');           
             refString = "Internal References";           
             break;
         case 3:
             accordionContainer.id = "msm_subordinate_accordion-"+id;
             container.appendChild(accordionContainer);
-            makeRefForm(ed, id);           
+            makeRefForm(ed, id, '');           
             refString = "External References";
             break;
         
     }
     
     $("#msm_subordinate_accordion-"+id).accordion({
-        heightStyle: "content"
+        heightStyle: "content"       
     }); 
     $("#msm_search_submit").click(function(e) {
         submitAjax(refString, msmId, id, "subordinate");
@@ -113,7 +113,9 @@ function changeForm(e, ed, id) {
     initInfoEditor(id);
 }
 
-function makeRefForm(ed, id)
+// existingRefId is given by msm_subordinate_ref-id result div and is a 
+// compositor ID for existing reference
+function makeRefForm(ed, id, existingRefId)
 {
     var infoAccordionHeader = $("<h3> Information Form </h3>");
     var infoFormFieldset = makeInfoForm(ed, id, true);
@@ -124,8 +126,10 @@ function makeRefForm(ed, id)
     $("#msm_subordinate_accordion-"+id).append(infoAccordionHeader);
     $("#msm_subordinate_accordion-"+id).append(infoDiv);
     
-    var searchAccordionHeader = $("<h3> Search Form </h3>");
-    var searchDiv = $("<div>\n\
+    if(existingRefId == '')
+    {
+        var searchAccordionHeader = $("<h3> Search Form </h3>");
+        var searchDiv = $("<div>\n\
                                 <form id='msm_search_form'>\n\
                                     <label for='msm_search_type'>Type: </label>\n\
                                     <select id='msm_search_type' name='msm_search_type'>\n\
@@ -147,21 +151,83 @@ function makeRefForm(ed, id)
                                     <input type='button' value='Search' id='msm_search_submit' class='msm_search_buttons'/>\n\
                                 </form>\n\
                             </div>");
+        
+        $("#msm_subordinate_accordion-"+id).append(searchAccordionHeader);
+        $("#msm_subordinate_accordion-"+id).append(searchDiv);
     
-    $("#msm_subordinate_accordion-"+id).append(searchAccordionHeader);
-    $("#msm_subordinate_accordion-"+id).append(searchDiv);
+        var searchResultAccordionHeader = $("<h3> Search Results </h3>");
+        var searchResultAccordionDiv = $("<div id='msm_search_result'></div>");
     
-    var searchResultAccordionHeader = $("<h3> Search Results </h3>");
-    var searchResultAccordionDiv = $("<div id='msm_search_result'></div>");
+        $("#msm_subordinate_accordion-"+id).append(searchResultAccordionHeader);
+        $("#msm_subordinate_accordion-"+id).append(searchResultAccordionDiv);
     
-    $("#msm_subordinate_accordion-"+id).append(searchResultAccordionHeader);
-    $("#msm_subordinate_accordion-"+id).append(searchResultAccordionDiv);
-    
-    $("input#msm_search_word").css("width", "75%");
+        $("input#msm_search_word").css("width", "75%");
+    }
+    else
+    {
+        var displayHeader = $("<h3> Current Reference Material </h3>");
+        var displayDiv = $("<div id='msm_subordinate_ref_display'></div>");
+        $("#msm_subordinate_accordion-"+id).append(displayHeader);
+        $("#msm_subordinate_accordion-"+id).append(displayDiv);
+        
+        $.ajax({
+            type: 'POST',
+            url:"editorCreation/msmLoadUnit.php",
+            data: {
+                loadRefId: existingRefId
+            },
+            success: function(data)
+            {     
+                var htmlString = JSON.parse(data);
+                
+                $("#msm_subordinate_ref_display").append(htmlString);
+                
+                $("#msm_subordinate_ref_display .msm_info_dialogs").dialog({
+                    autoOpen: false,
+                    height: "auto",
+                    modal: false,
+                    width: 605
+                });  
+                                
+                $("#msm_subordinate_ref_display").find(".msm_subordinate_hotwords").each(function(i, element) {
+                    var idInfo = this.id.split("-");
+                    var newid = '';
+                                                    
+                    for(var i=1; i < idInfo.length-1; i++)
+                    {
+                        newid += idInfo[i]+"-";
+                    }
+                                                        
+                    newid += idInfo[idInfo.length-1];
+                                                                           
+                    previewInfo(this.id, "dialog-"+newid);
+                                                        
+                    previewInfo(this.id, "dialog-"+newid);                    
+                   
+                });
+            //                                    
+            //                $("#msm_subordinate_ref_display .msm_info_dialogs").find(".msm_subordinate_hotwords").each(function() {
+            //                    var idInfo = this.id.split("-");
+            //                    var newid = '';
+            //                                        
+            //                    for(var i=1; i < idInfo.length-1; i++)
+            //                    {
+            //                        newid += idInfo[i]+"-";
+            //                    }
+            //                                            
+            //                    newid += idInfo[idInfo.length-1];
+            //                                                               
+            //                    previewInfo(this.id, "dialog-"+newid);
+            //                });
+            }
+        });
+    }
 }
 
 function initInfoEditor(id)
 {
+    console.log("in initInfoEditor");
+    
     var titleid = "msm_subordinate_infoTitle-"+id;
     var contentid = "msm_subordinate_infoContent-"+id;
     
@@ -382,13 +448,33 @@ function loadPreviousData(editor, id)
     
     if((prevRefId != '')&&(prevRefId != 'undefined')&&(prevRefId !== null))
     {
-        var container = $("#msm_subordinate_content_form_container-"+id);
+        var container = $("#msm_subordinate_content_form_container-"+id);      
+        
+        $('#msm_subordinate_content_form_container-'+id+" textarea").each(function() {
+            console.log("deleting stuff");
+            if(tinymce.getInstanceById($(this).attr("id")) != null)
+            {
+                console.log("remove in load");
+                console.log(this.id);
+                tinymce.execCommand('mceFocus', false, $(this).attr("id"));
+                tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
+            }
+        });
+        
+        $(container).empty(); // has info title/content textarea already appended      
+        
         var accordionContainer = document.createElement("div");
         accordionContainer.id = "msm_subordinate_accordion-"+id;
-        container.appendChild(accordionContainer);
-        makeRefForm(editor, id);           
-    }
-    
+        $(container).append(accordionContainer)
+        makeRefForm(editor, id, prevRefId);   
+
+        var msmIdInfo = window.location.search.split("=");   
+        var msmId = msmIdInfo[1]; 
+        $("#msm_search_submit").click(function(e) {
+            submitAjax(prevSelectValue, msmId, id, "subordinate");
+        });
+    }    
+   
     $(".msm_subordinate_textareas").each(function() {
         if(this.id == "msm_subordinate_infoTitle-"+id)
         {
@@ -441,11 +527,13 @@ function appendUrlForm(id)
 
 function closeSubFormDialog(id)
 {
+    console.log("close sub form dialog");
     $('#msm_subordinate_container-'+id+" textarea").each(function() {
         if(tinymce.getInstanceById($(this).attr("id")) != null)
         {
-            tinymce.execCommand('mceFocus', false, $(this).attr("id"));
-            tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
+            console.log("removing this tinymce: "+this.id);
+            tinymce.EditorManager.execCommand('mceFocus', false, $(this).attr("id"));
+            tinymce.EditorManager.execCommand('mceRemoveControl', false, $(this).attr("id"));
         }
     });
     
@@ -612,12 +700,8 @@ function createSubordinateDiv(index, oldidString, flag)
     });
     
     var selectedBox =  $("#msm_search_result_table input").filter(":checked");
-    
-    console.log("selectedBox")
-    console.log(selectedBox);
     // no selection made in search result --> meaning only infotitle/info contents are filled.
-    // so switch select value to information    
-    
+    // so switch select value to information      
     if(errorArray.length == 0)
     {
         var resultSelectDiv = document.createElement("div");
@@ -834,14 +918,17 @@ function createDialog(ed, idNumber, subId)
             $("#msm_subordinate_highlighted-"+idNumber).val(ed.selection.getContent({
                 format : 'text'
             }));
+            $("#msm_subordinate_accordion-"+idNumber).accordion({
+                heightStyle: "content"               
+            });             
             initInfoEditor(idNumber);
         },
         buttons: {
             "Save": function() {
                 submitSubForm(ed, idNumber, subId);
             },
-            "Cancel": function() {
-                closeSubFormDialog(idNumber);
+            "Cancel": function() {                
+                closeSubFormDialog(idNumber);                
             }
         },
         modal:true,
@@ -849,7 +936,8 @@ function createDialog(ed, idNumber, subId)
         height: dHeight,
         width: dWidth,
         closeOnEscape: false
-    });
+    });  
+    
     $('#msm_subordinate_container-'+idNumber).dialog('open').css('display', 'block');
 }
 
