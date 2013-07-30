@@ -62,8 +62,8 @@ function changeForm(e, ed, id) {
         $("#msm_subordinate_url-"+id).parent().empty().remove();
     }
     
-    var msmIdInfo = window.location.search.split("=");   
-    var msmId = msmIdInfo[1]; 
+    var msmIdInfo = window.location.search.split("=");
+    var msmId = msmIdInfo[1];
     
     var accordionContainer = document.createElement("div");
 
@@ -80,21 +80,32 @@ function changeForm(e, ed, id) {
         case 2:
             accordionContainer.id = "msm_subordinate_accordion-"+id;
             container.appendChild(accordionContainer);
-            makeRefForm(ed, id, '');           
-            refString = "Internal References";           
+            makeRefForm(ed, id, '');
+            refString = "Internal References";
             break;
         case 3:
             accordionContainer.id = "msm_subordinate_accordion-"+id;
             container.appendChild(accordionContainer);
-            makeRefForm(ed, id, '');           
+            makeRefForm(ed, id, '');
             refString = "External References";
             break;
         
     }
     
     $("#msm_subordinate_accordion-"+id).accordion({
-        heightStyle: "content"       
-    }); 
+        heightStyle: "content",
+        beforeActivate: function(e, ui) {
+            if(ui.newPanel[0].id.match(/msm_info_accordion/))
+            {
+                $(".msm_subordinate_textareas").each(function() {
+                    if(typeof tinymce.getInstanceById(this.id) === "undefined")
+                    {
+                        tinymce.execCommand("mceAddControl", true, this.id);
+                    }                    
+                });
+            }
+        }
+    });
     $("#msm_search_submit").click(function(e) {
         submitAjax(refString, msmId, id, "subordinate");
     });
@@ -113,7 +124,7 @@ function changeForm(e, ed, id) {
     initInfoEditor(id);
 }
 
-// existingRefId is given by msm_subordinate_ref-id result div and is a 
+// existingRefId is given by msm_subordinate_ref-id result div and is a
 // compositor ID for existing reference
 function makeRefForm(ed, id, existingRefId)
 {
@@ -177,7 +188,7 @@ function makeRefForm(ed, id, existingRefId)
                 loadRefId: existingRefId
             },
             success: function(data)
-            {     
+            {
                 var htmlString = JSON.parse(data);
                 
                 $("#msm_subordinate_ref_display").append(htmlString);
@@ -187,7 +198,7 @@ function makeRefForm(ed, id, existingRefId)
                     height: "auto",
                     modal: false,
                     width: 605
-                });  
+                });
                                 
                 $("#msm_subordinate_ref_display").find(".msm_subordinate_hotwords").each(function(i, element) {
                     var idInfo = this.id.split("-");
@@ -202,23 +213,9 @@ function makeRefForm(ed, id, existingRefId)
                                                                            
                     previewInfo(this.id, "dialog-"+newid);
                                                         
-                    previewInfo(this.id, "dialog-"+newid);                    
+                    previewInfo(this.id, "dialog-"+newid);
                    
                 });
-            //                                    
-            //                $("#msm_subordinate_ref_display .msm_info_dialogs").find(".msm_subordinate_hotwords").each(function() {
-            //                    var idInfo = this.id.split("-");
-            //                    var newid = '';
-            //                                        
-            //                    for(var i=1; i < idInfo.length-1; i++)
-            //                    {
-            //                        newid += idInfo[i]+"-";
-            //                    }
-            //                                            
-            //                    newid += idInfo[idInfo.length-1];
-            //                                                               
-            //                    previewInfo(this.id, "dialog-"+newid);
-            //                });
             }
         });
     }
@@ -226,8 +223,6 @@ function makeRefForm(ed, id, existingRefId)
 
 function initInfoEditor(id)
 {
-    console.log("in initInfoEditor");
-    
     var titleid = "msm_subordinate_infoTitle-"+id;
     var contentid = "msm_subordinate_infoContent-"+id;
     
@@ -289,7 +284,7 @@ function initInfoEditor(id)
         })
         
         M.editor_tinymce.init_filepicker(Y, contentid, tinymce_filepicker_options);
-    }); 
+    });
 }
 
 function makeInfoForm(ed, id, refFlag)
@@ -385,7 +380,7 @@ function loadPreviousData(editor, id)
     var prevSelectValue = null;
     var prevUrlValue = null;
     var prevInfoTitleValue = null;
-    var prevInfoContentValue = null;  
+    var prevInfoContentValue = null;
     var prevRefId = null;
    
     $('#msm_subordinate_result-'+indexId).children('div').each(function() {
@@ -402,17 +397,17 @@ function loadPreviousData(editor, id)
             prevInfoTitleValue = $(this).html();
         }
         else if(this.id == 'msm_subordinate_infoContent-'+indexId)
-        {     
+        {
             // to process the math elements to load it properly
             $(this).find(".matheditor").each(function() {
                 var newcontent = '';
                 $(this).find("script").each(function() {
-                    newcontent = $(this).html(); 
+                    newcontent = $(this).html();
                 });
           
                 $(this).empty();
                 $(this).append(newcontent);
-            });       
+            });
             prevInfoContentValue = $(this).html();
         }
         else if(this.id == 'msm_subordinate_ref-'+indexId)
@@ -448,32 +443,29 @@ function loadPreviousData(editor, id)
     
     if((prevRefId != '')&&(prevRefId != 'undefined')&&(prevRefId !== null))
     {
-        var container = $("#msm_subordinate_content_form_container-"+id);      
+        var container = $("#msm_subordinate_content_form_container-"+id);
         
         $('#msm_subordinate_content_form_container-'+id+" textarea").each(function() {
-            console.log("deleting stuff");
             if(tinymce.getInstanceById($(this).attr("id")) != null)
             {
-                console.log("remove in load");
-                console.log(this.id);
                 tinymce.execCommand('mceFocus', false, $(this).attr("id"));
                 tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
             }
         });
         
-        $(container).empty(); // has info title/content textarea already appended      
+        $(container).empty(); // has info title/content textarea already appended
         
         var accordionContainer = document.createElement("div");
         accordionContainer.id = "msm_subordinate_accordion-"+id;
         $(container).append(accordionContainer)
-        makeRefForm(editor, id, prevRefId);   
+        makeRefForm(editor, id, prevRefId);
 
-        var msmIdInfo = window.location.search.split("=");   
-        var msmId = msmIdInfo[1]; 
+        var msmIdInfo = window.location.search.split("=");
+        var msmId = msmIdInfo[1];
         $("#msm_search_submit").click(function(e) {
             submitAjax(prevSelectValue, msmId, id, "subordinate");
         });
-    }    
+    }
    
     $(".msm_subordinate_textareas").each(function() {
         if(this.id == "msm_subordinate_infoTitle-"+id)
@@ -542,10 +534,10 @@ function closeSubFormDialog(id)
 }
 
 /**
- * tinyMCE object ed --> the id of the editor where the popup was triggered from
- * string id --> ending of HTML ID of the subordinate components to make them unique
- * string subId
- */
+* tinyMCE object ed --> the id of the editor where the popup was triggered from
+* string id --> ending of HTML ID of the subordinate components to make them unique
+* string subId
+*/
 function submitSubForm(ed, id, subId)
 {
     var selectedText = ed.selection.getContent({
@@ -561,7 +553,7 @@ function submitSubForm(ed, id, subId)
     else
     {
         selectedNode = ed.selection.getNode().tagName;
-    }    
+    }
     
     var newSubordinateDiv = null;
     
@@ -646,7 +638,7 @@ function replaceSubordinateDiv(index, hotId, subId)
         subparent = findParentDiv(index);
     }
     else
-    {        
+    {
         subparent = findParentDiv(subId);
     }
    
@@ -699,13 +691,13 @@ function createSubordinateDiv(index, oldidString, flag)
         }
     });
     
-    var selectedBox =  $("#msm_search_result_table input").filter(":checked");
+    var selectedBox = $("#msm_search_result_table input").filter(":checked");
     // no selection made in search result --> meaning only infotitle/info contents are filled.
-    // so switch select value to information      
+    // so switch select value to information
     if(errorArray.length == 0)
     {
         var resultSelectDiv = document.createElement("div");
-        resultSelectDiv.id = "msm_subordinate_select-"+idString; 
+        resultSelectDiv.id = "msm_subordinate_select-"+idString;
         
         var selectedValue= $("#msm_subordinate_select-"+index).val();
         
@@ -734,17 +726,17 @@ function createSubordinateDiv(index, oldidString, flag)
         $(resultTitleDiv).append($("#msm_subordinate_infoTitle-"+index).val());
     
         var resultContentDiv = document.createElement("div");
-        resultContentDiv.id = "msm_subordinate_infoContent-"+idString;        
+        resultContentDiv.id = "msm_subordinate_infoContent-"+idString;
        
         $("#msm_subordinate_infoContent-"+index).find(".matheditor").each(function() {
             var newcontent = '';
             $(this).find("script").each(function() {
-                newcontent = $(this).html(); 
+                newcontent = $(this).html();
             });
           
             $(this).empty();
             $(this).append("\("+newcontent+"\)");
-        });  
+        });
         $(resultContentDiv).append($("#msm_subordinate_infoContent-"+index).val());
         
         // for internal/external reference values to be stored
@@ -753,17 +745,17 @@ function createSubordinateDiv(index, oldidString, flag)
         
         if(selectedBox.length > 0)
         {
-            refValueDiv = document.createElement("div");  
+            refValueDiv = document.createElement("div");
             refValueDiv.id = "msm_subordinate_ref-"+idString;
         
-            var selectedRow = $(selectedBox).closest("tr");                    
+            var selectedRow = $(selectedBox).closest("tr");
             var selectedCells = $(selectedRow).find(".msm_search_result_table_cells");
             var selectedCheckbox = $(selectedCells[0]).find("input");
                     
             var selectedId = $(selectedCheckbox[0]).attr("id").split("-");
             
             var refValueText = document.createTextNode(selectedId[1]);
-            $(refValueDiv).append(refValueText);             
+            $(refValueDiv).append(refValueText);
         }
         
         // inserting all parts of the subordinate result values into the container div
@@ -910,7 +902,7 @@ function createDialog(ed, idNumber, subId)
     var wHeight = $(window).height();
                 
     var dWidth = wWidth*0.6;
-    var dHeight = wHeight*0.8;    
+    var dHeight = wHeight*0.8;
                 
     $('#msm_subordinate_container-'+idNumber).dialog({
         open: function(event, ui) {
@@ -919,16 +911,28 @@ function createDialog(ed, idNumber, subId)
                 format : 'text'
             }));
             $("#msm_subordinate_accordion-"+idNumber).accordion({
-                heightStyle: "content"               
-            });             
+                heightStyle: "content",
+                beforeActivate: function(e, ui) {
+                    console.log('beforeActivate in createDialog');
+                    if(ui.newPanel[0].id.match(/msm_info_accordion/))
+                    {
+                        $(".msm_subordinate_textareas").each(function() {
+                            if(typeof tinymce.getInstanceById(this.id) === "undefined")
+                            {
+                                tinymce.execCommand("mceAddControl", true, this.id);
+                            }                    
+                        });
+                    }
+                }
+            });
             initInfoEditor(idNumber);
         },
         buttons: {
             "Save": function() {
                 submitSubForm(ed, idNumber, subId);
             },
-            "Cancel": function() {                
-                closeSubFormDialog(idNumber);                
+            "Cancel": function() {
+                closeSubFormDialog(idNumber);
             }
         },
         modal:true,
@@ -936,14 +940,14 @@ function createDialog(ed, idNumber, subId)
         height: dHeight,
         width: dWidth,
         closeOnEscape: false
-    });  
+    });
     
     $('#msm_subordinate_container-'+idNumber).dialog('open').css('display', 'block');
 }
 
 function findParentDiv(idEnding)
 {
-    //    console.log("findParentDiv idEnding: "+idEnding);
+    // console.log("findParentDiv idEnding: "+idEnding);
     
     var parent = null;
     var matchInfo = null;
@@ -977,8 +981,8 @@ function findParentDiv(idEnding)
     var extracontentmatch = idEnding.match(extraInfoPattern);
     var associatematch = idEnding.match(associatePattern);
     
-    // parent needs to be whatever div contains the object in 
-    // msm_subordinate_result_containers class (usually the 
+    // parent needs to be whatever div contains the object in
+    // msm_subordinate_result_containers class (usually the
     // copied_msm_structural_elements class)
     
     if(defmatch)
@@ -989,62 +993,62 @@ function findParentDiv(idEnding)
     }
     if(defrefmatch)
     {
-        matchInfo = defrefmatch[0].split("-");    
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");  
+        matchInfo = defrefmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
         
         parent = document.getElementById("copied_msm_defref-"+typeId);
     }
     else if(commentmatch)
     {
-        matchInfo = commentmatch[0].split("-");        
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
+        matchInfo = commentmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("copied_msm_comment-"+typeId);
     }
     else if(commentrefmatch)
     {
-        matchInfo = commentrefmatch[0].split("-");    
-        typeId = matchInfo[0].replace(/([A-Za-z]*-?)(\d+)/, "$2");       
+        matchInfo = commentrefmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*-?)(\d+)/, "$2");
         typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
         
         parent = document.getElementById("copied_msm_commentref-"+typeId);
     }
     else if(bodymatch)
     {
-        matchInfo = bodymatch[0].split("-");            
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        matchInfo = bodymatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("copied_msm_body-"+typeId);
     }
     else if(intromatch)
     {
-        matchInfo = intromatch[0].split("-");        
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        matchInfo = intromatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("copied_msm_intro-"+typeId);
     }
     else if(introchildmatch)
-    {        
-        matchInfo = introchildmatch[0].split("-");        
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+    {
+        matchInfo = introchildmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("msm_intro_child_div-"+typeId);
     }
     else if(extracontentmatch)
     {
-        matchInfo = extracontentmatch[0].split("-");        
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        matchInfo = extracontentmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         parent = document.getElementById("copied_msm_extra_info-"+typeId);
     }
     else if(associatematch)
     {
-        matchInfo = associatematch[0].split("-");    
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
+        matchInfo = associatematch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         typeId += "-"+matchInfo[1];
         
         parent = document.getElementById("msm_associate_childs-"+typeId);
     }
     else if (statementmatch)
     {
-        matchInfo = statementmatch[0].split("-");        
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");     
+        matchInfo = statementmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         
         $(".copied_msm_structural_element").each(function() {
             var currentIdInfo = this.id.split("-");
@@ -1054,35 +1058,35 @@ function findParentDiv(idEnding)
                 var resultIdEnding = resultIdInfo[1].replace(/(statementtheoremcontent)(\d+)/, "$2");
                 
                 if(typeId == resultIdInfo[2])
-                {    
+                {
                     if(currentIdInfo[1] == resultIdEnding)
-                    {                            
+                    {
                         typeId = resultIdEnding;
                     }
                 }
             });
-        });        
+        });
         
         parent = document.getElementById("copied_msm_theorem-"+typeId);
     }
     else if(statementrefmatch)
     {
-        matchInfo = statementrefmatch[0].split("-"); 
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");    
+        matchInfo = statementrefmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
         parent = document.getElementById("copied_msm_theoremref-"+typeId);
     }
     else if(partmatch)
     {
-        matchInfo = partmatch[0].split("-");   
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
+        matchInfo = partmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         typeId += "-"+matchInfo[1];
         parent = document.getElementById("msm_theorem_statement_container-"+typeId);
     }
     else if(partrefmatch)
     {
-        matchInfo = partrefmatch[0].split("-");   
-        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
+        matchInfo = partrefmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
         typeId += "-"+matchInfo[1]+"-"+matchInfo[2]+"-"+matchInfo[3];
         
         parent = document.getElementById("msm_theoremref_statement_container-"+typeId);
@@ -1108,9 +1112,9 @@ function isExistingIndex(oldid)
         newId = isExistingIndex(newId);
     }
     else
-    {       
+    {
         newId = oldid;
-    }    
+    }
     
     return newId;
 }
@@ -1129,24 +1133,24 @@ function replaceIdEnding(ed, edIdInfo)
     var refmatch = /^\S*((defrefcontent|commentrefcontent)\d+\S*)/;
     var idReplacement = '';
     if(ed.editorId.match(statementTheoremmatch))
-    {                
+    {
         var subordinatematch = /^\S*(subordinateinfoContent)+(statementtheoremcontent\d+\S*)$/;
                 
         if(ed.editorId.match(subordinatematch))
         {
-            idReplacement = edIdInfo[1].replace(pattern, "$2");     
+            idReplacement = edIdInfo[1].replace(pattern, "$2");
         }
         else
-        {                    
+        {
             for(var i = 1; i < edIdInfo.length-1; i++)
             {
                 tempString += edIdInfo[i] + "-";
             }
             tempString += edIdInfo[edIdInfo.length-1];
                     
-            var tempidReplacement = tempString.replace(pattern, "$3");       
+            var tempidReplacement = tempString.replace(pattern, "$3");
                     
-            var tempStringInfo = tempidReplacement.split("-");                  
+            var tempStringInfo = tempidReplacement.split("-");
                     
             idReplacement = tempStringInfo[1];
         }
@@ -1160,7 +1164,7 @@ function replaceIdEnding(ed, edIdInfo)
         }
         tempString += edIdInfo[edIdInfo.length-1];
                     
-        idReplacement = tempString.replace(partpattern, "$2"); 
+        idReplacement = tempString.replace(partpattern, "$2");
     }
     else if(ed.editorId.match(associatematch))
     {
@@ -1171,7 +1175,7 @@ function replaceIdEnding(ed, edIdInfo)
         }
         tempString += edIdInfo[edIdInfo.length-1];
                     
-        idReplacement = tempString.replace(assopattern, "$2"); 
+        idReplacement = tempString.replace(assopattern, "$2");
     }
     else if(ed.editorId.match(refmatch))
     {
@@ -1182,7 +1186,7 @@ function replaceIdEnding(ed, edIdInfo)
         }
         tempString += edIdInfo[edIdInfo.length-1];
                     
-        idReplacement = tempString.replace(refpattern, "$2"); 
+        idReplacement = tempString.replace(refpattern, "$2");
     }
     else if(ed.editorId.match(statementTheoremRefmatch))
     {
@@ -1193,23 +1197,23 @@ function replaceIdEnding(ed, edIdInfo)
         }
         tempString += edIdInfo[edIdInfo.length-1];
                     
-        idReplacement = tempString.replace(theoremcontentrefpattern, "$2"); 
+        idReplacement = tempString.replace(theoremcontentrefpattern, "$2");
     }
     else if(ed.editorId.match(partTheoremRefmatch))
     {
-        var theorempartrefpattern = /([A-Za-z]*?)(\d+-\d+-\d+-\d+-\d+)((?:-\d+)*)/;        
+        var theorempartrefpattern = /([A-Za-z]*?)(\d+-\d+-\d+-\d+-\d+)((?:-\d+)*)/;
         for(var i = 1; i < edIdInfo.length-1; i++)
         {
             tempString += edIdInfo[i] + "-";
         }
         tempString += edIdInfo[edIdInfo.length-1];
                     
-        idReplacement = tempString.replace(theorempartrefpattern, "$2"); 
+        idReplacement = tempString.replace(theorempartrefpattern, "$2");
     }
     else
     {
-        idReplacement = edIdInfo[1].replace(pattern, "$2");                   
-    }  
+        idReplacement = edIdInfo[1].replace(pattern, "$2");
+    }
             
     return idReplacement;
 }
