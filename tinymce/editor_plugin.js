@@ -9,8 +9,6 @@
  */
 (function() {
     // Load plugin specific language pack
-    tinymce.PluginManager.requireLangPack('subordinate');
-
     tinymce.create('tinymce.plugins.SubordinatePlugin', {
         /**
          * Initializes the plugin, this will be executed after the plugin has been created.
@@ -99,9 +97,9 @@
             
             // Register subordinate button
             ed.addButton('subordinate', {
-                title : 'subordinate.desc',
+                title : 'subordinate:desc',
                 cmd : 'mceSubordinate',
-                image : url + '/img/subordinate.png'
+                image : url + '/pix/subordinate.png'
             });
             
         },
