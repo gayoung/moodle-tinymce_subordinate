@@ -28,9 +28,9 @@ class tinymce_subordinate extends editor_tinymce_plugin
      * @param context $context Context where editor is being shown
      * @param array $options Options for this editor
      */
+    
     protected function update_init_params(array &$params, context $context, array $options = null)
     {
-
         $this->add_js_plugin($params);
     }
 

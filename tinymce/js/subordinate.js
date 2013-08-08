@@ -278,7 +278,7 @@ function initInfoEditor(id)
             theme_advanced_buttons1:"fontselect,fontsizeselect,formatselect,|,undo,redo,|,search,replace,|,fullscreen",
             theme_advanced_buttons2:"bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,|,cleanup,removeformat,pastetext,pasteword,|,forecolor,backcolor,|,ltr,rtl",
             theme_advanced_buttons3:"bullist,numlist,outdent,indent,|,subordinate,|,image,imagemapper,moodlemedia,matheditor,nonbreaking,charmap,table,|,code,spellchecker",
-            moodle_init_plugins:"dragmath:loader.php/dragmath/-1/editor_plugin.js,moodlenolink:loader.php/moodlenolink/-1/editor_plugin.js,spellchecker:loader.php/spellchecker/-1/editor_plugin.js,moodleimage:loader.php/moodleimage/-1/editor_plugin.js,moodlemedia:loader.php/moodlemedia/-1/editor_plugin.js,matheditor:loader.php/matheditor/-1/editor_plugin.js",
+            moodle_init_plugins:"dragmath:loader.php/dragmath/-1/editor_plugin.js,moodlenolink:loader.php/moodlenolink/-1/editor_plugin.js,spellchecker:loader.php/spellchecker/-1/editor_plugin.js,moodleimage:loader.php/moodleimage/-1/editor_plugin.js,moodlemedia:loader.php/moodlemedia/-1/editor_plugin.js,matheditor:loader.php/matheditor/-1/editor_plugin.js,subordinate:loader.php/subordinate/-1/editor_plugin.js",
             file_browser_callback:"M.editor_tinymce.filepicker",
             moodle_plugin_base: M.cfg.wwwroot+"/lib/editor/tinymce/plugins/"
         })
@@ -415,6 +415,13 @@ function loadPreviousData(editor, id)
             prevRefId = $(this).text();
         }
     });
+    
+    console.log("all the previous values");
+    console.log(prevSelectValue);
+    console.log(prevUrlValue);
+    console.log(prevInfoTitleValue);
+    console.log(prevInfoContentValue);
+    console.log(prevRefId);
             
     var select = document.getElementById("msm_subordinate_select-"+id);
         
@@ -534,10 +541,10 @@ function closeSubFormDialog(id)
 }
 
 /**
-* tinyMCE object ed --> the id of the editor where the popup was triggered from
-* string id --> ending of HTML ID of the subordinate components to make them unique
-* string subId
-*/
+ * tinyMCE object ed --> the id of the editor where the popup was triggered from
+ * string id --> ending of HTML ID of the subordinate components to make them unique
+ * string subId
+ */
 function submitSubForm(ed, id, subId)
 {
     var selectedText = ed.selection.getContent({
@@ -903,8 +910,17 @@ function createDialog(ed, idNumber, subId)
                 
     var dWidth = wWidth*0.6;
     var dHeight = wHeight*0.8;
+    
+    console.log("createDialog");
+    console.log("idNumber: "+idNumber);
+    console.log($('#msm_subordinate_container-'+idNumber))
                 
-    $('#msm_subordinate_container-'+idNumber).dialog({
+    $('#msm_subordinate_container-'+idNumber).dialog({       
+        modal:true,
+        autoOpen: false,
+        height: dHeight,
+        width: dWidth,
+        closeOnEscape: false,
         open: function(event, ui) {
             $(".ui-dialog-titlebar-close").hide(); // disabling the close button
             $("#msm_subordinate_highlighted-"+idNumber).val(ed.selection.getContent({
@@ -934,14 +950,9 @@ function createDialog(ed, idNumber, subId)
             "Cancel": function() {
                 closeSubFormDialog(idNumber);
             }
-        },
-        modal:true,
-        autoOpen: false,
-        height: dHeight,
-        width: dWidth,
-        closeOnEscape: false
+        }
     });
-    
+//    $('#msm_subordinate_container-'+idNumber).css('display', 'block');
     $('#msm_subordinate_container-'+idNumber).dialog('open').css('display', 'block');
 }
 

@@ -99,7 +99,7 @@
             ed.addButton('subordinate', {
                 title : 'subordinate:desc',
                 cmd : 'mceSubordinate',
-                image : url + '/pix/subordinate.png'
+                image : url + '/img/icon.png'
             });
             
         },
@@ -303,6 +303,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     
     if(selectedNode == "A")
     {
+        console.log("loading");
         changeSelectIndex(ed, idNumber);
         loadPreviousData(ed, idNumber);
     }

@@ -16,6 +16,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2013080800;
+$plugin->version = 2013080801;
 $plugin->requires = 2013042600;
 $plugin->component = 'tinymce_subordinate';
