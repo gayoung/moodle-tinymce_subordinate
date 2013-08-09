@@ -97,7 +97,7 @@
             
             // Register subordinate button
             ed.addButton('subordinate', {
-                title : 'subordinate:desc',
+                title : 'subordinate.desc',
                 cmd : 'mceSubordinate',
                 image : url + '/img/icon.png'
             });
