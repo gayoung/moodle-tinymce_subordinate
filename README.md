@@ -15,7 +15,7 @@ also to reference materials created from MSM module.
 
 Installation:
 
-1. Donwload the zip file from this repository.
+1. Donwload this plugin as a zip file.
 2. Extract the files from the zip file then rename the folder to "subordinate" then rezip the file as "subordinate.zip".
 3. To install this file in moodle, go to:
         Site Administration --> Plugins --> Install add-ons
@@ -34,3 +34,4 @@ Prerequisites:
 
 - MSM module --> repository link: https://github.com/OohooDevTeam/moodle-mod_msm
 - Matheditor TinyMCE plugin --> https://github.com/oohoo/moodle-tinymce_matheditor
+- Remove Subordinate TinyMCE Plugin: https://github.com/oohoo/moodle-tinymce_subnolink
