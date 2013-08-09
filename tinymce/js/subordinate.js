@@ -415,13 +415,6 @@ function loadPreviousData(editor, id)
             prevRefId = $(this).text();
         }
     });
-    
-    console.log("all the previous values");
-    console.log(prevSelectValue);
-    console.log(prevUrlValue);
-    console.log(prevInfoTitleValue);
-    console.log(prevInfoContentValue);
-    console.log(prevRefId);
             
     var select = document.getElementById("msm_subordinate_select-"+id);
         
@@ -526,11 +519,9 @@ function appendUrlForm(id)
 
 function closeSubFormDialog(id)
 {
-    console.log("close sub form dialog");
     $('#msm_subordinate_container-'+id+" textarea").each(function() {
         if(tinymce.getInstanceById($(this).attr("id")) != null)
         {
-            console.log("removing this tinymce: "+this.id);
             tinymce.EditorManager.execCommand('mceFocus', false, $(this).attr("id"));
             tinymce.EditorManager.execCommand('mceRemoveControl', false, $(this).attr("id"));
         }
@@ -648,15 +639,55 @@ function replaceSubordinateDiv(index, hotId, subId)
     {
         subparent = findParentDiv(subId);
     }
-   
+    // after the subordinate is saved the hotId ending is previous values before the HTML IDs for the subordinate divs were replaced
+    // with the database ID values.  So if that's the case then this function will not be finding the old
+    // subordinate values to replace.
+    var foundDiv = false;
     // need grab the parent to get the id of the result container
     // (this generic code allows the plugin to have nested subordinates)
     $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {
         if(this.id == "msm_subordinate_result-"+hotId)
         {
+            foundDiv = true;
             $(this).empty().remove();
         }
     });
+    
+    // possibility of result container HTML ID ending is pre-database ID
+    // before save into db, incrementing numbers were added to keep the div unique
+    // after save into db, it contains the database ID
+    if(!foundDiv)
+    {
+        var newId = '';
+        $(subparent).find(".msm_subordinate_result_containers").eq(0).children("div").each(function() {           
+            $(this).find(".msm_subordinate_hotword_matchs").each(function() {
+                var oldmatch = $(this).text();   
+                var oldmatchInfo = oldmatch.split("-");                    
+                var oldId = oldmatchInfo[1];
+                for(var i=2; i < oldmatchInfo.length; i++)
+                {
+                    oldId += "-"+oldmatchInfo[i];
+                }    
+                
+                if(oldId == hotId)
+                {
+                    var newIdInfo = this.id.split("-");
+                    
+                    newId = newIdInfo[1];
+                    for(var i=2; i < newIdInfo.length; i++)
+                    {
+                        newId += "-"+newIdInfo[i];
+                    }
+                }
+            });
+            
+            if(this.id == "msm_subordinate_result-"+newId)
+            {
+                $(this).empty().remove();
+            }
+            
+        });
+    }
    
     var subordinateResultContainer = createSubordinateDiv(index, hotId, "replace");
     
@@ -910,10 +941,6 @@ function createDialog(ed, idNumber, subId)
                 
     var dWidth = wWidth*0.6;
     var dHeight = wHeight*0.8;
-    
-    console.log("createDialog");
-    console.log("idNumber: "+idNumber);
-    console.log($('#msm_subordinate_container-'+idNumber))
                 
     $('#msm_subordinate_container-'+idNumber).dialog({       
         modal:true,
@@ -929,7 +956,6 @@ function createDialog(ed, idNumber, subId)
             $("#msm_subordinate_accordion-"+idNumber).accordion({
                 heightStyle: "content",
                 beforeActivate: function(e, ui) {
-                    console.log('beforeActivate in createDialog');
                     if(ui.newPanel[0].id.match(/msm_info_accordion/))
                     {
                         $(".msm_subordinate_textareas").each(function() {
@@ -952,14 +978,12 @@ function createDialog(ed, idNumber, subId)
             }
         }
     });
-//    $('#msm_subordinate_container-'+idNumber).css('display', 'block');
+    //    $('#msm_subordinate_container-'+idNumber).css('display', 'block');
     $('#msm_subordinate_container-'+idNumber).dialog('open').css('display', 'block');
 }
 
 function findParentDiv(idEnding)
-{
-    // console.log("findParentDiv idEnding: "+idEnding);
-    
+{   
     var parent = null;
     var matchInfo = null;
     var typeId = null;
