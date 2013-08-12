@@ -139,6 +139,13 @@
     tinymce.PluginManager.add('subordinate', tinymce.plugins.SubordinatePlugin);
 })();
 
+/**
+ * This method is used to create the main UI for the subordinate dialog box.
+ * 
+ * @param {tinymce.Editor} ed       current editor that the subordinate plugin was triggered from     
+ * @param {string} idNumber         ending of this subordinat dialog("ending of parent element ID - number that is incremented per subordinate)
+ * @param {string} isSub            a string flag for nested subordinates     
+ */
 function makeSubordinateDialog(ed, idNumber, isSub)
 {
     var container = null;
@@ -185,7 +192,7 @@ function makeSubordinateDialog(ed, idNumber, isSub)
     selectTypeOption4.appendChild(selectTypeOption4Value);
     
     var dialogContentForm = document.createElement('div');
-    
+    // if not nested subordinate
     if(isSub != '')
     {
         if(selectedNode != 'A')
@@ -301,9 +308,10 @@ function makeSubordinateDialog(ed, idNumber, isSub)
         container.appendChild(dialogwhole);
     }
     
+    // if the highlighted text from the editor is already an anchor element, it means
+    // that this subordinate was already submitted into db. So retrieve the existing data
     if(selectedNode == "A")
     {
-        console.log("loading");
         changeSelectIndex(ed, idNumber);
         loadPreviousData(ed, idNumber);
     }
